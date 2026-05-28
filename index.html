@@ -94,8 +94,8 @@ Save this as `index.html` and open it in your browser.
 
     .arrow {
       position: absolute;
-      top: 58%;
-      left: 56%;
+      top: 50%;
+      left: 65%;
       color: white;
       font-size: 20px;
       font-weight: bold;
@@ -103,6 +103,7 @@ Save this as `index.html` and open it in your browser.
       text-shadow: 0 0 10px white;
       z-index: 20;
       user-select: none;
+      pointer-events: none;
     }
 
     @keyframes drawHeart {
@@ -169,7 +170,7 @@ Save this as `index.html` and open it in your browser.
 
   <div class="container" id="container">
     <div class="center-letter" id="letterE">E</div>
-    <div class="arrow" id="arrow">↑ Press many times</div>
+    <div class="arrow" id="arrow">← Click the E many times</div>
   </div>
 
   <script>
@@ -182,11 +183,15 @@ Save this as `index.html` and open it in your browser.
     letterE.addEventListener("click", () => {
       clickCount++;
 
-      // Small smooth pulse effect
-      letterE.style.transform = `translate(-50%, -50%) scale(${1 + clickCount * 0.05})`;
+      // Pulse effect while clicking
+      const scale = 0.2 + (clickCount * 0.1);
+
+      letterE.style.opacity = Math.min(clickCount / 8, 1);
+      letterE.style.transform = `translate(-50%, -50%) scale(${scale})`;
 
       if (clickCount >= 8) {
         letterE.classList.add("show");
+
         arrow.style.opacity = "0";
         arrow.style.transition = "opacity 1s ease";
       }
@@ -195,7 +200,7 @@ Save this as `index.html` and open it in your browser.
     let points = [];
 
     // Heart equation
-    for (let t = 0; t < Math.PI * 2; t += 0.06) {
+    for (let t = 0; t < Math.PI * 2; t += 0.09) {
       const x = 16 * Math.pow(Math.sin(t), 3);
 
       const y =
@@ -207,6 +212,11 @@ Save this as `index.html` and open it in your browser.
       points.push({ x, y });
     }
 
+    // Remove crowded overlapping points near top and bottom
+    points = points.filter(point => {
+      return !(Math.abs(point.x) < 2 && (point.y > 10 || point.y < -15));
+    });
+
     // Sort from bottom to top for drawing effect
     points.sort((a, b) => a.y - b.y);
 
@@ -214,6 +224,9 @@ Save this as `index.html` and open it in your browser.
       const text = document.createElement("div");
       text.className = "text";
       text.innerText = "I love you";
+
+      // Smaller text for cleaner heart shape
+      text.style.fontSize = "12px";
 
       const posX = window.innerWidth / 2 + point.x * 25;
       const posY = window.innerHeight / 2 - point.y * 25;
@@ -231,21 +244,3 @@ Save this as `index.html` and open it in your browser.
 </body>
 </html>
 ```
-
-## How to run
-
-1. Create a folder.
-2. Save the code as `index.html`
-3. Double-click the file.
-4. It will open in your browser.
-
-## Optional upgrades
-
-* Replace `I love you` with any text.
-* Add music using an `<audio>` tag.
-* Add floating particles.
-* Deploy free using:
-
-  * GitHub Pages
-  * Netlify
-  * Vercel
