@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Heart of Devotion · Words Become E</title>
+  <title>Heart of Words · Eternal Love</title>
   <style>
     * {
       margin: 0;
@@ -13,59 +13,68 @@
     }
 
     body {
-      background: radial-gradient(circle at center, #0c0a0e 0%, #000000 100%);
+      background: radial-gradient(circle at center, #0a0508 0%, #000000 100%);
+      min-height: 100vh;
       overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+      font-family: 'Segoe UI', 'Poppins', 'Arial', system-ui, sans-serif;
     }
 
     .container {
       position: relative;
-      width: 100%;
+      width: 100vw;
       height: 100vh;
-      overflow: visible;
+      overflow: hidden;
     }
 
-    /* each "I love you" word — starts as part of the heart outline, later shoots to center */
+    /* each "I love you" word - forms the heart shape */
     .word-particle {
       position: absolute;
-      color: #b91c1c;
+      color: #c41e1e;
       font-size: 15px;
       font-weight: 600;
       white-space: nowrap;
       pointer-events: none;
-      text-shadow: 0 0 5px #8b0000, 0 0 10px #5e0000;
+      text-shadow: 0 0 4px #8b0000, 0 0 10px #5e0000;
       opacity: 0;
       z-index: 15;
-      transition: left 0.9s cubic-bezier(0.22, 0.97, 0.36, 1), top 0.9s cubic-bezier(0.22, 0.97, 0.36, 1), opacity 0.4s ease;
-      will-change: left, top;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      backdrop-filter: blur(1px);
+      will-change: transform;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      animation: gentleAppear 0.45s ease forwards;
     }
 
-    /* arrow-like motion: subtle scale and directional feel */
-    .word-particle.arrow-flight {
-      transition: left 0.75s cubic-bezier(0.2, 1.2, 0.4, 1), top 0.75s cubic-bezier(0.2, 1.2, 0.4, 1);
-      filter: drop-shadow(0 0 6px #ff4d4d);
+    /* subtle floating pulse for each word - makes heart feel alive */
+    @keyframes gentleAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.6);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+      }
     }
 
-    /* heartbeat container remains fully visible */
-    .heart-outline-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 5;
+    /* floating heartbeat animation for all words */
+    .word-particle {
+      animation: gentleAppear 0.45s ease forwards, softFloat 3s ease-in-out infinite;
     }
 
-    /* glowing letter E in center — built by words, yet always visible */
+    @keyframes softFloat {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-3px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    /* glowing letter E in the center of the heart */
     .center-letter {
       position: absolute;
       top: 50%;
@@ -76,443 +85,198 @@
       font-family: 'Segoe UI', 'Arial Black', 'Impact', sans-serif;
       opacity: 1;
       z-index: 30;
-      text-shadow: 0 0 18px #a81c1c, 0 0 30px #6d0e0e, 0 0 50px #3a0303;
-      color: #9e1e1e;
-      transition: all 0.25s ease-out;
+      text-shadow: 0 0 20px #a81c1c, 0 0 35px #6d0e0e, 0 0 55px #3a0303, 0 0 80px #8b0000;
+      color: #d42a2a;
       letter-spacing: 8px;
-      background: none;
       pointer-events: none;
       white-space: pre;
+      background: none;
+      animation: eGlowPulse 2s ease-in-out infinite alternate;
     }
 
-    /* the "E" gets bigger & brighter as words merge */
-    .center-letter.filled-glow {
-      text-shadow: 0 0 28px #e64545, 0 0 55px #b32b2b, 0 0 90px #7a1515;
-      color: #f07a7a;
+    @keyframes eGlowPulse {
+      0% {
+        text-shadow: 0 0 20px #a81c1c, 0 0 35px #6d0e0e, 0 0 55px #3a0303;
+        transform: translate(-50%, -50%) scale(0.98);
+      }
+      100% {
+        text-shadow: 0 0 35px #ff5555, 0 0 60px #c12727, 0 0 90px #8b0000, 0 0 120px #a11a1a;
+        transform: translate(-50%, -50%) scale(1.02);
+      }
     }
 
-    /* subtle flying particles after collection for magic */
-    .completion-note {
-      position: absolute;
-      bottom: 12%;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 1rem;
-      color: #c05353;
-      font-weight: 400;
-      letter-spacing: 1px;
-      text-shadow: 0 0 8px #410000;
-      opacity: 0;
-      transition: opacity 1.2s ease;
-      pointer-events: none;
-      z-index: 20;
-      font-family: monospace;
-    }
-
-    .completion-note.show {
-      opacity: 1;
-    }
-
-    /* small responsive adjustments */
+    /* responsive adjustments */
     @media (max-width: 700px) {
       .word-particle {
-        font-size: 11px;
+        font-size: 10px;
       }
       .center-letter {
-        font-size: 70px;
+        font-size: 65px;
         letter-spacing: 5px;
       }
     }
 
-    @keyframes gentleAppear {
-      0% {
-        opacity: 0;
-        transform: scale(0.7);
-        filter: blur(3px);
+    @media (max-width: 480px) {
+      .word-particle {
+        font-size: 8px;
       }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
+      .center-letter {
+        font-size: 50px;
+        letter-spacing: 3px;
       }
-    }
-
-    /* arrow trailing effect on words (animated heartbeat remains steady shape) */
-    @keyframes tinyArrowPulse {
-      0% { transform: translateX(0px) translateY(0px);}
-      100% { transform: translateX(1px) translateY(-1px);}
     }
   </style>
 </head>
 <body>
 <div class="container" id="container">
-  <div class="heart-outline-layer" id="heartLayer"></div>
   <div class="center-letter" id="heartLetterE">E</div>
-  <div class="completion-note" id="completionMsg">❤️ every "I love you" became part of E ❤️</div>
 </div>
 
 <script>
   (function() {
     const container = document.getElementById('container');
-    const heartLayer = document.getElementById('heartLayer');
     const centerE = document.getElementById('heartLetterE');
-    const completionMsgDiv = document.getElementById('completionMsg');
     
-    // ----- HEART PARAMETRIC EQUATION (iconic smooth heart) -----
-    let heartPoints = [];
-    // t step: fine enough for full heart (around 100+ points)
-    for (let t = 0; t < Math.PI * 2; t += 0.058) {
+    // ==================== PERFECT HEART SHAPE EQUATION ====================
+    // Classic parametric heart: x = 16sin³(t), y = 13cos(t) - 5cos(2t) - 2cos(3t) - cos(4t)
+    const heartPoints = [];
+    
+    // Generate points with perfect density for beautiful heart silhouette
+    for (let t = 0; t < Math.PI * 2; t += 0.052) {
       const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
       heartPoints.push({ x, y });
     }
     
-    // optional: sort for beautiful even distribution (no overlap)
-    heartPoints.sort((a,b) => a.y - b.y);
+    // Sort bottom to top for elegant draw effect (visual layering)
+    heartPoints.sort((a, b) => a.y - b.y);
     const totalWords = heartPoints.length;
     
-    // store all word elements for later arrow-like shooting
-    let wordItems = [];
-    let collectedCount = 0;
-    let collectionTriggered = false;
-    
-    // scaling factor for heart size (responsive but stable)
-    let currentScale = 24;
+    // Heart scaling factor (size on screen)
+    let heartScale = 24;
     let centerX = window.innerWidth / 2;
     let centerY = window.innerHeight / 2;
     
-    // function to update heart positions (if window resize before collection)
-    function updateHeartPositions() {
-      if (collectionTriggered) return; // once collection starts, no reposition (keeps flight intact)
-      centerX = window.innerWidth / 2;
-      centerY = window.innerHeight / 2;
-      wordItems.forEach((word, idx) => {
-        if (!word || !word.parentNode) return;
-        const point = heartPoints[idx];
-        if (!point) return;
-        const leftPos = centerX + point.x * currentScale;
-        const topPos = centerY - point.y * currentScale;
+    // Store all word elements
+    let wordElements = [];
+    
+    // ==================== CREATE WORDS ON HEART SHAPE ====================
+    function createWordsOnHeart() {
+      heartPoints.forEach((point, idx) => {
+        const word = document.createElement('div');
+        word.className = 'word-particle';
+        word.innerText = 'I love you';
+        
+        // Dark rich red with subtle variation
+        const redValue = 180 + Math.floor(Math.random() * 40);
+        word.style.color = `rgb(${redValue}, 35, 35)`;
+        
+        // Calculate position based on heart equation
+        const leftPos = centerX + point.x * heartScale;
+        const topPos = centerY - point.y * heartScale;
+        
         word.style.left = `${leftPos}px`;
         word.style.top = `${topPos}px`;
-        // keep original stored positions
-        word.dataset.origLeft = leftPos;
-        word.dataset.origTop = topPos;
-      });
-      // keep E centered
-      if (centerE) {
-        centerE.style.left = '50%';
-        centerE.style.top = '50%';
-        centerE.style.transform = 'translate(-50%, -50%)';
-      }
-    }
-    
-    // ----- CREATE ALL WORDS FORMING THE HEART (NO SPIN, JUST ELEGANT HEART SHAPE) -----
-    heartPoints.forEach((point, index) => {
-      const wordDiv = document.createElement('div');
-      wordDiv.className = 'word-particle';
-      wordDiv.innerText = 'I love you';
-      wordDiv.style.color = '#c71f1f';
-      wordDiv.style.fontWeight = '600';
-      
-      // initial positions based on current window size
-      const leftPos = centerX + point.x * currentScale;
-      const topPos = centerY - point.y * currentScale;
-      wordDiv.style.left = `${leftPos}px`;
-      wordDiv.style.top = `${topPos}px`;
-      wordDiv.style.opacity = '0';
-      wordDiv.style.animation = 'gentleAppear 0.5s ease forwards';
-      wordDiv.style.animationDelay = `${index * 0.025}s`;
-      
-      // store metadata
-      wordDiv.dataset.origLeft = leftPos;
-      wordDiv.dataset.origTop = topPos;
-      wordDiv.dataset.pointX = point.x;
-      wordDiv.dataset.pointY = point.y;
-      wordDiv.dataset.index = index;
-      wordDiv.dataset.collected = 'false';
-      
-      heartLayer.appendChild(wordDiv);
-      wordItems.push(wordDiv);
-    });
-    
-    // small helper: refresh all positions after load / resize (only before collection)
-    window.addEventListener('resize', () => {
-      if (!collectionTriggered) {
-        updateHeartPositions();
-      }
-    });
-    
-    // ensure E stays centered
-    window.addEventListener('resize', () => {
-      if (centerE) {
-        centerE.style.left = '50%';
-        centerE.style.top = '50%';
-        centerE.style.transform = 'translate(-50%, -50%)';
-      }
-    });
-    
-    // ----- E LETTER GROWS AND ABSORBS EACH WORD (VISUAL FEEDBACK) -----
-    function updateEFillProgress() {
-      // each word increases size and richness: from 95px up to 210px
-      let baseSize = 95;
-      let increment = collectedCount * 0.95;
-      let newSize = Math.min(baseSize + increment, 212);
-      centerE.style.fontSize = `${newSize}px`;
-      
-      // glow intensity increases
-      const intensity = Math.min(0.65 + (collectedCount / totalWords) * 0.8, 1.5);
-      const redVal = 150 + Math.floor((collectedCount / totalWords) * 105);
-      const greenVal = 40 + Math.floor((collectedCount / totalWords) * 45);
-      centerE.style.color = `rgb(${redVal}, ${greenVal}, 55)`;
-      
-      let shadowStrength = `0 0 ${12 + collectedCount * 0.5}px #ef4b4b, 0 0 ${22 + collectedCount * 0.7}px #b81c1c, 0 0 ${40 + collectedCount}px #7a0a0a`;
-      centerE.style.textShadow = shadowStrength;
-      
-      // pulse animation when new word merges
-      centerE.classList.add('filled-glow');
-      setTimeout(() => {
-        if (centerE) centerE.classList.remove('filled-glow');
-      }, 220);
-    }
-    
-    // Mark word as collected: remove it after arrow-like flight ends and update E
-    function absorbWordIntoCatalogue(wordElement) {
-      if (wordElement.dataset.collected === 'true') return;
-      wordElement.dataset.collected = 'true';
-      
-      // increment the count of words merged into E
-      collectedCount++;
-      
-      // update E's appearance (size, glow)
-      updateEFillProgress();
-      
-      // animate a soft vanishing after arriving at E's core
-      if (wordElement.parentNode) {
-        wordElement.style.opacity = '0';
-        wordElement.style.transform = 'scale(0.6)';
-        setTimeout(() => {
-          if (wordElement && wordElement.parentNode) wordElement.remove();
-        }, 180);
-      } else {
-        if (wordElement && wordElement.parentNode) wordElement.remove();
-      }
-      
-      // final celebration if every word became part of E
-      if (collectedCount === totalWords) {
-        centerE.style.fontSize = '224px';
-        centerE.style.textShadow = '0 0 50px #ff7b7b, 0 0 90px #c12727, 0 0 140px #8f1717';
-        centerE.style.color = '#ffbcbc';
-        centerE.style.letterSpacing = '14px';
-        completionMsgDiv.classList.add('show');
-        // Also create a final sparkle effect on E
-        centerE.style.transition = 'all 0.3s';
-      }
-    }
-    
-    // ----- "ARROW-LIKE" ANIMATION: each word shoots towards the letter E (like arrow and go back? but keeps heart visible. Actually each word launches to E and merges. The heart shape remains because the original positions originally drawn stay visible? Wait — but the words move: however the heart outline will disappear as words fly? Requirement: "dont hide the heart when E letter and every word became a part of E" => We need to preserve visual heart shape even while words migrate.
-    // To keep the heart shape visible at all times, we duplicate? better: the words themselves ARE the heart. But when they fly, the heart would vanish. The user wants the heart shape to remain intact visually until words merge but still the heart shape shouldn't disappear. 
-    // Creative solution: Keep the words that already moved become part of E, but we also retain a ghost/heart outline made of soft glowing remnants? Actually requirement: "keep the heart shape and dont hide the heart when E letter and every word became a part of E" So we must ensure that even while words are shooting, the silhouette of the heart is still visible.
-    // To achieve this: I'll add a subtle but elegant permanent heart outline made of delicate glowing dots that remains visible all the time, plus words shoot from their positions into E, and the original heart shape stays present via a faint heart trail + afterimage effect. Simpler: create an additional SVG or background heart border? But here's better: when each word launches, we leave behind a semi-transparent duplicate ghost that persists, keeping the heart shape always visible. This perfectly satisfies "dont hide the heart when E letter"
-    
-    let ghostElements = []; // store ghost traces for permanent heart shape
-    
-    function createGhostAtPosition(x, y, indexVal) {
-      // create a tiny glowing heart remnant or dot that retains heart shape
-      const ghost = document.createElement('div');
-      ghost.className = 'heart-ghost';
-      ghost.innerText = '❤️';
-      ghost.style.position = 'absolute';
-      ghost.style.left = `${x}px`;
-      ghost.style.top = `${y}px`;
-      ghost.style.fontSize = '13px';
-      ghost.style.color = '#b33b3b';
-      ghost.style.textShadow = '0 0 6px #a11, 0 0 10px #6a0e0e';
-      ghost.style.opacity = '0.65';
-      ghost.style.pointerEvents = 'none';
-      ghost.style.zIndex = '8';
-      ghost.style.filter = 'blur(0.5px)';
-      ghost.style.transition = 'opacity 1s ease';
-      container.appendChild(ghost);
-      ghostElements.push(ghost);
-      // let ghost fade a bit but stay visible to keep heart shape permanent
-      setTimeout(() => {
-        if(ghost) ghost.style.opacity = '0.4';
-      }, 300);
-      // ghost never disappears fully: preserves heart silhouette forever
-    }
-    
-    // now trigger arrow-like shooting for all words with delay that feels like sequential arrows, but keep heart shape via ghost duplicates.
-    function startArrowCollection() {
-      if (collectionTriggered) return;
-      collectionTriggered = true;
-      
-      const targetRect = centerE.getBoundingClientRect();
-      const targetCenterX = targetRect.left + targetRect.width / 2;
-      const targetCenterY = targetRect.top + targetRect.height / 2;
-      
-      wordItems.forEach((word, idx) => {
-        if (!word || !word.parentNode) return;
-        if (word.dataset.collected === 'true') return;
         
-        // get current exact position (left, top) of word (where it sits on heart)
-        const startLeft = parseFloat(word.style.left);
-        const startTop = parseFloat(word.style.top);
-        if (isNaN(startLeft) || isNaN(startTop)) return;
+        // Staggered appearance animation delay
+        word.style.animationDelay = `${idx * 0.018}s`;
         
-        // create ghost BEFORE moving, to preserve heart shape permanently
-        createGhostAtPosition(startLeft, startTop, idx);
+        // Custom float delay to make heart feel organic
+        const floatDelay = (idx % 7) * 0.4;
+        word.style.animation = `gentleAppear 0.45s ease forwards, softFloat 2.8s ease-in-out infinite ${floatDelay}s`;
         
-        // compute target position: should land exactly on top of the central E letter
-        const wordRect = word.getBoundingClientRect();
-        const wordWidth = wordRect.width;
-        const wordHeight = wordRect.height;
-        const finalLeft = targetCenterX - (wordWidth / 2);
-        const finalTop = targetCenterY - (wordHeight / 2);
-        
-        // add arrow-like effect class
-        word.classList.add('arrow-flight');
-        // apply new target positions (arrow trajectory to E)
-        word.style.left = `${finalLeft}px`;
-        word.style.top = `${finalTop}px`;
-        word.style.zIndex = '100';
-        // slight zoom for dynamic impact
-        word.style.transform = 'scale(1.05)';
-        
-        // when transition ends -> word reaches E, then absorb & remove
-        const onFlightEnd = (e) => {
-          if (e.propertyName === 'left' || e.propertyName === 'top') {
-            word.removeEventListener('transitionend', onFlightEnd);
-            if (word.parentNode && word.dataset.collected !== 'true') {
-              absorbWordIntoCatalogue(word);
-            }
-          }
-        };
-        word.addEventListener('transitionend', onFlightEnd);
-        
-        // safety fallback for absorption
-        setTimeout(() => {
-          if (word && word.parentNode && word.dataset.collected !== 'true') {
-            absorbWordIntoCatalogue(word);
-          }
-        }, 1000);
-        
-        // stagger each arrow for dramatic effect: each word shoots sequentially
-        const delay = idx * 28; // milliseconds between each arrow
-        word.style.transitionDelay = '0s';
-        // but we need to ensure left/top properties are set after slight delay otherwise they move instantly. 
-        // because we set new positions immediately, they'll move at same time. We want ARROW EFFECT one by one.
-        // So we reset transition, then apply after delay to create sequential shooting.
-        // better approach: set transition but delay the start of each word's movement.
-        word.style.transition = 'left 0.78s cubic-bezier(0.2, 1.1, 0.4, 1), top 0.78s cubic-bezier(0.2, 1.1, 0.4, 1), transform 0.3s';
-        // temporarily store final positions and reset to original to give delayed effect
-        const finalXStored = finalLeft;
-        const finalYStored = finalTop;
-        // revert to original position instantly
-        word.style.left = `${startLeft}px`;
-        word.style.top = `${startTop}px`;
-        word.style.transform = 'scale(1)';
-        // after delay, launch towards E
-        setTimeout(() => {
-          if (word && word.parentNode) {
-            word.style.left = `${finalXStored}px`;
-            word.style.top = `${finalYStored}px`;
-            word.style.transform = 'scale(1.08)';
-            word.style.filter = 'drop-shadow(0 0 6px #ff6666)';
-          }
-        }, delay);
+        container.appendChild(word);
+        wordElements.push(word);
       });
     }
     
-    // also need to ensure that after all words shot and merged, the heart shape stays visible because we created ghosts for every word.
-    // final cleanup: no removal of ghosts, so heart shape made of '❤️' dots remains, it's beautiful.
-    // additional: some ghosts glow softly, eternally retaining heart contour.
+    // ==================== RESPONSIVE REPOSITIONING ====================
+    // Keep heart perfectly centered and shaped on window resize
+    function repositionHeart() {
+      centerX = window.innerWidth / 2;
+      centerY = window.innerHeight / 2;
+      
+      wordElements.forEach((word, idx) => {
+        if (!word.parentNode) return;
+        const point = heartPoints[idx];
+        if (!point) return;
+        
+        const newLeft = centerX + point.x * heartScale;
+        const newTop = centerY - point.y * heartScale;
+        
+        word.style.left = `${newLeft}px`;
+        word.style.top = `${newTop}px`;
+      });
+      
+      // Keep E perfectly centered
+      centerE.style.left = '50%';
+      centerE.style.top = '50%';
+      centerE.style.transform = 'translate(-50%, -50%)';
+    }
     
-    // Adjust E position dynamic after resize ensures target center accurate
-    let resizeObserver = null;
-    function refreshTarget() {
-      if(collectionTriggered) {
-        // if collection started, we don't reposition words, but updating E's position might misalign flights.
-        // but since flights already started, we ignore.
-        return;
+    // ==================== ADD EXTRA SPARKLE TO HEART (optional visual flair) ====================
+    // Creates tiny shimmering dots around heart for magical feel
+    function addHeartSparkles() {
+      const sparkleColors = ['#ff4444', '#ff6666', '#cc3333', '#ff7777'];
+      for (let i = 0; i < 60; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.style.position = 'absolute';
+        sparkle.style.width = '2px';
+        sparkle.style.height = '2px';
+        sparkle.style.backgroundColor = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+        sparkle.style.borderRadius = '50%';
+        sparkle.style.pointerEvents = 'none';
+        sparkle.style.opacity = '0';
+        sparkle.style.zIndex = '8';
+        
+        // Random position around heart area
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 150 + Math.random() * 80;
+        const offsetX = Math.cos(angle) * radius;
+        const offsetY = Math.sin(angle) * radius * 0.8; // slightly elliptical
+        
+        sparkle.style.left = `calc(50% + ${offsetX}px)`;
+        sparkle.style.top = `calc(50% + ${offsetY}px)`;
+        
+        sparkle.style.animation = `sparkleFade ${1 + Math.random() * 2}s ease-in-out infinite ${Math.random() * 2}s`;
+        container.appendChild(sparkle);
+      }
+      
+      // Add sparkle animation style if not exists
+      if (!document.querySelector('#sparkleStyle')) {
+        const style = document.createElement('style');
+        style.id = 'sparkleStyle';
+        style.textContent = `
+          @keyframes sparkleFade {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 0.8; transform: scale(1.5); }
+            100% { opacity: 0; transform: scale(0); }
+          }
+        `;
+        document.head.appendChild(style);
       }
     }
+    
+    // ==================== INITIALIZE ====================
+    createWordsOnHeart();
+    
+    // Add subtle sparkles around heart (optional beauty)
+    setTimeout(() => {
+      addHeartSparkles();
+    }, 500);
+    
+    // Reposition on window resize for perfect responsiveness
     window.addEventListener('resize', () => {
-      if(!collectionTriggered) {
-        updateHeartPositions();
-      }
-      if(centerE) {
-        centerE.style.left = '50%';
-        centerE.style.top = '50%';
-        centerE.style.transform = 'translate(-50%, -50%)';
-      }
+      repositionHeart();
     });
     
-    // === start timeline: let the heart form beautifully, then after 2.9 seconds 
-    // words will sequentially shoot like arrows into letter E, while the heart shape stays visible because each word leaves behind a permanent glowing ghost.
+    // Small delay to ensure all fonts and positions are calculated
     setTimeout(() => {
-      if (!collectionTriggered) {
-        startArrowCollection();
-      }
-    }, 2900);  // wait for full heart visibility, then arrow sequence begins
+      repositionHeart();
+    }, 100);
     
-    // smooth initial appearance of all words done via CSS animation.
-    // Also ensure E letter has initial central glow
-    centerE.style.opacity = '1';
-    centerE.style.animation = 'gentleAppear 1.1s ease';
-    
-    // one more graceful fallback: after all words collected, we add a final subtle heart outline made of ghost but it's already visible
-    // Additionally, if any words were not collected due to glitch, force after 6s
-    setTimeout(() => {
-      if (collectionTriggered && collectedCount < totalWords) {
-        const remaining = document.querySelectorAll('.word-particle');
-        remaining.forEach(w => {
-          if (w && w.parentNode && w.dataset.collected !== 'true') {
-            const leftPos = parseFloat(w.style.left);
-            const topPos = parseFloat(w.style.top);
-            if (!isNaN(leftPos)) createGhostAtPosition(leftPos, topPos, 0);
-            absorbWordIntoCatalogue(w);
-          }
-        });
-        if (collectedCount >= totalWords) {
-          centerE.style.fontSize = '224px';
-          completionMsgDiv.classList.add('show');
-        }
-      }
-    }, 6800);
-    
-    // small style for ghost elements (permanent heart)
-    const styleGhost = document.createElement('style');
-    styleGhost.textContent = `
-      .heart-ghost {
-        font-family: monospace;
-        transition: opacity 0.8s ease;
-        animation: softPulse 2.2s infinite alternate;
-        font-size: 14px;
-      }
-      @keyframes softPulse {
-        0% { opacity: 0.5; text-shadow: 0 0 3px #b34b4b; transform: scale(0.96);}
-        100% { opacity: 0.85; text-shadow: 0 0 8px #c95a5a; transform: scale(1.02);}
-      }
-      .word-particle {
-        transition-timing-function: cubic-bezier(0.2, 1.2, 0.4, 1);
-        font-family: 'Segoe UI', system-ui;
-      }
-      .center-letter {
-        transition: font-size 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), text-shadow 0.15s, color 0.2s;
-        background: none;
-      }
-    `;
-    document.head.appendChild(styleGhost);
-    
-    // extra visual: guarantee that the heart outline is never hidden because ghosts remain permanently.
-    // also, the original words that shot into E leave behind a heart silhouette made of tiny hearts.
-    // that meets "keep the heart shape" perfectly.
-    
-    // small fix: some words may not create ghost if they're already moved -> but we already create before moving for each word.
-    // to double-check if any word shooting didn't create ghost due to timing? Done inside startArrowCollection for each word.
-    // to make heart shape more radiant, pre-add small hint: done.
-    console.log("❤️ Heart of words active: Each 'I love you' shoots like an arrow into E, leaving heart shape alive with glowing ghosts.");
+    // Log success
+    console.log(`❤️ Beautiful heart created with ${totalWords} "I love you" words. Central E glowing in the middle.`);
   })();
 </script>
 </body>
