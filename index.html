@@ -2,151 +2,425 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Purple Heart Animation</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Heart of Words · Crimson Collection</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      user-select: none;
     }
 
     body {
-      background: black;
+      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
       overflow: hidden;
       height: 100vh;
+      width: 100vw;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: 'Segoe UI', 'Arial', system-ui, sans-serif;
     }
 
     .container {
       position: relative;
       width: 100%;
       height: 100vh;
+      overflow: hidden;
     }
 
+    /* glowing dark red words — heart particles */
     .text {
       position: absolute;
-      color: #b266ff;
-      font-size: 14px;
+      color: #b91c1c;      /* deep crimson base */
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
       white-space: nowrap;
       opacity: 0;
-      user-select: none;
-      text-shadow:
-        0 0 5px #b266ff,
-        0 0 10px #b266ff,
-        0 0 20px #b266ff;
-
-      animation: drawHeart 0.5s forwards, glow 2s infinite alternate;
+      pointer-events: none;
+      text-shadow: 0 0 3px #8b0000, 0 0 8px #5e0000, 0 0 12px #a31515;
+      animation: fadeInGentle 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+      will-change: transform, left, top;
+      transition: left 0.85s cubic-bezier(0.2, 0.8, 0.4, 1), top 0.85s cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
+    /* continuous spinning motion — each word rotates elegantly */
+    .text.spin {
+      animation: fadeInGentle 0.55s forwards, spinWord 1.8s infinite linear;
+    }
+
+    /* gentle appearance, no transform conflicts */
+    @keyframes fadeInGentle {
+      0% {
+        opacity: 0;
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+
+    /* smooth eternal spin — each "I love you" rotates around its own center */
+    @keyframes spinWord {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* CENTER LETTER E — majestic, waiting to be filled */
     .center-letter {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #c77dff;
+      color: #a51c1c;
       font-size: 120px;
-      font-weight: bold;
+      font-weight: 900;
+      font-family: 'Segoe UI', 'Arial Black', sans-serif;
       opacity: 0;
-      z-index: 10;
-
-      text-shadow:
-        0 0 10px #c77dff,
-        0 0 20px #c77dff,
-        0 0 40px #c77dff,
-        0 0 80px #c77dff;
-
-      animation: showE 2s ease forwards 3s;
+      z-index: 30;
+      text-shadow: 0 0 12px #cc3b3b, 0 0 25px #8b0000, 0 0 45px #4a0000;
+      transition: all 0.2s ease;
+      letter-spacing: 8px;
+      animation: riseElegantE 1.2s ease-out forwards 2.2s;
     }
 
-    @keyframes drawHeart {
-      from {
+    @keyframes riseElegantE {
+      0% {
         opacity: 0;
-        transform: translateY(30px) scale(0.5);
+        transform: translate(-50%, -50%) scale(0.65);
+        filter: blur(8px);
       }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+      40% {
+        opacity: 0.8;
       }
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow:
-          0 0 5px #b266ff,
-          0 0 10px #b266ff;
-      }
-
-      to {
-        text-shadow:
-          0 0 10px #d9a3ff,
-          0 0 20px #d9a3ff,
-          0 0 40px #d9a3ff;
-      }
-    }
-
-    @keyframes showE {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
-      }
-
-      to {
+      100% {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
+        filter: blur(0);
+        text-shadow: 0 0 18px #dc4c4c, 0 0 35px #a12222, 0 0 60px #6b1010;
+      }
+    }
+
+    /* fill pulse effect when words merge into E */
+    .fill-pulse {
+      animation: pulseGlow 0.35s ease-out;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        text-shadow: 0 0 12px #b11f1f, 0 0 25px #941515;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        text-shadow: 0 0 28px #ff5e5e, 0 0 55px #c72828, 0 0 80px #8b0000;
+        transform: translate(-50%, -50%) scale(1.02);
+      }
+      100% {
+        text-shadow: 0 0 18px #dc4c4c, 0 0 35px #a12222;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    /* subtle final message after full collection */
+    .completion-note {
+      position: absolute;
+      bottom: 12%;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 1rem;
+      color: #bc4e4e;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px #440000;
+      opacity: 0;
+      transition: opacity 1s ease;
+      pointer-events: none;
+      z-index: 20;
+      font-family: monospace;
+    }
+
+    .completion-note.show {
+      opacity: 1;
+    }
+
+    /* responsive scaling for small screens */
+    @media (max-width: 680px) {
+      .text {
+        font-size: 10px;
+      }
+      .center-letter {
+        font-size: 80px;
       }
     }
   </style>
 </head>
 <body>
+<div class="container" id="container">
+  <div class="center-letter" id="heartLetterE">E</div>
+  <div class="completion-note" id="completionMsg">❤️ every word became part of E ❤️</div>
+</div>
 
-  <div class="container" id="container">
-    <div class="center-letter">E</div>
-  </div>
+<script>
+  (function() {
+    const container = document.getElementById('container');
+    const centerE = document.getElementById('heartLetterE');
+    const completionMsgDiv = document.getElementById('completionMsg');
 
-  <script>
-    const container = document.getElementById("container");
-
+    // ---------- HEART SHAPE COORDINATES (classic parametric) ----------
     let points = [];
-
-    // Heart equation
-    for (let t = 0; t < Math.PI * 2; t += 0.06) {
+    // famous heart equation: x = 16*sin(t)^3 , y = 13cos(t)-5cos(2t)-2cos(3t)-cos(4t)
+    for (let t = 0; t < Math.PI * 2; t += 0.058) {   // smooth density (~108 points)
       const x = 16 * Math.pow(Math.sin(t), 3);
-
-      const y =
-        13 * Math.cos(t) -
-        5 * Math.cos(2 * t) -
-        2 * Math.cos(3 * t) -
-        Math.cos(4 * t);
-
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
       points.push({ x, y });
     }
 
-    // Sort from bottom to top for drawing effect
+    // optional sorting for better visual layering (bottom to top)
     points.sort((a, b) => a.y - b.y);
 
-    points.forEach((point, index) => {
-      const text = document.createElement("div");
-      text.className = "text";
-      text.innerText = "I love you";
+    // store all word elements for later collection
+    const wordElements = [];
 
-      const posX = window.innerWidth / 2 + point.x * 25;
-      const posY = window.innerHeight / 2 - point.y * 25;
-
-      text.style.left = `${posX}px`;
-      text.style.top = `${posY}px`;
-
-      // Draw animation delay
-      text.style.animationDelay = `${index * 0.05}s`;
-
-      container.appendChild(text);
+    // ----- CREATE WORDS THAT FORM THE HEART (DARK RED, SPINNING) -----
+    points.forEach((point, idx) => {
+      const wordDiv = document.createElement('div');
+      wordDiv.className = 'text spin';           // spinning + fading effect
+      wordDiv.innerText = 'I love you';          // romantic word
+      wordDiv.style.color = '#b91c1c';           // dark rich red
+      
+      // scale factor for heart size & positioning (responsive & centered)
+      const scaleFactor = 24;                    // perfect heart size on most screens
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      const posX = centerX + point.x * scaleFactor;
+      const posY = centerY - point.y * scaleFactor;
+      
+      wordDiv.style.left = `${posX}px`;
+      wordDiv.style.top = `${posY}px`;
+      
+      // store original positions for possible reset? not needed, but keep for reference
+      wordDiv.dataset.origLeft = posX;
+      wordDiv.dataset.origTop = posY;
+      
+      // staggered appearance delay: smooth draw effect
+      wordDiv.style.animationDelay = `${idx * 0.04}s`;
+      
+      container.appendChild(wordDiv);
+      wordElements.push(wordDiv);
     });
-  </script>
 
+    // ---------- COLLECTION LOGIC : WORDS FLY TOWARD 'E' & FILL IT ----------
+    let collectedCount = 0;
+    const totalWords = wordElements.length;
+    let collectionStarted = false;
+    let finalFontIncrease = 0;
+    let baseFontSize = 120;    // px (matches css default)
+    
+    // update central E's visual "filled" state
+    function updateEFillProgress() {
+      // each word adds 0.9px font size and extra glow intensity
+      const extraSize = collectedCount * 0.68;
+      let newFontSize = Math.min(baseFontSize + extraSize, 240);  // max 240px (filled & majestic)
+      centerE.style.fontSize = `${newFontSize}px`;
+      
+      // intensity of red & fill: from deep crimson to blazing garnet
+      const intensity = Math.min(0.6 + (collectedCount / totalWords) * 0.6, 1.2);
+      const redGlow = `0 0 ${12 + collectedCount * 0.6}px #e63946, 0 0 ${20 + collectedCount * 0.8}px #b91c1c, 0 0 ${35 + collectedCount}px #6a040f`;
+      centerE.style.textShadow = redGlow;
+      
+      // dynamic color transformation: becomes brighter as it fills
+      const r = 180 + Math.floor((collectedCount / totalWords) * 75);
+      const g = 40 + Math.floor((collectedCount / totalWords) * 30);
+      const b = 40;
+      centerE.style.color = `rgb(${r}, ${g}, ${b})`;
+      
+      // extra satisfaction: add pulse animation on each collected word
+      centerE.classList.add('fill-pulse');
+      setTimeout(() => {
+        if (centerE) centerE.classList.remove('fill-pulse');
+      }, 300);
+    }
+    
+    // final celebration when E is fully formed by all words
+    function finalCompletionEffect() {
+      if (collectedCount === totalWords && totalWords > 0) {
+        // ultimate filled state: huge glow and gentle message
+        centerE.style.fontSize = '248px';
+        centerE.style.textShadow = '0 0 40px #ff6b6b, 0 0 90px #c12727, 0 0 140px #9b1a1a';
+        centerE.style.color = '#ffaeae';
+        centerE.style.letterSpacing = '12px';
+        completionMsgDiv.classList.add('show');
+        // add lingering joy effect
+        setTimeout(() => {
+          completionMsgDiv.style.opacity = '1';
+        }, 100);
+      }
+    }
+    
+    // handle one word reaching the center
+    function collectWord(word, event) {
+      // prevent multiple handling from transitionend
+      if (word.collectedFlag === true) return;
+      word.collectedFlag = true;
+      
+      // increment total filled count
+      collectedCount++;
+      
+      // update E appearance: font grows, glow grows
+      updateEFillProgress();
+      
+      // remove the word smoothly after transition ends
+      if (word.parentNode) word.parentNode.removeChild(word);
+      
+      // final check for completion
+      if (collectedCount === totalWords) {
+        finalCompletionEffect();
+      }
+    }
+    
+    // start collecting: all flying words spin while moving to the center E
+    function startCollection() {
+      if (collectionStarted) return;
+      collectionStarted = true;
+      
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      wordElements.forEach((word, i) => {
+        if (!word.parentNode) return;
+        
+        // get exact dimensions to perfectly align at center of the E
+        const rect = word.getBoundingClientRect();
+        const wordWidth = rect.width;
+        const wordHeight = rect.height;
+        
+        // target position: exactly centered on the letter E
+        const targetLeft = centerX - (wordWidth / 2);
+        const targetTop = centerY - (wordHeight / 2);
+        
+        // force transition for smooth flight
+        word.style.transition = 'left 0.9s cubic-bezier(0.2, 0.85, 0.4, 1), top 0.9s cubic-bezier(0.2, 0.85, 0.4, 1)';
+        word.style.left = `${targetLeft}px`;
+        word.style.top = `${targetTop}px`;
+        
+        // optional tiny scale effect during flight (makes it dramatic, but keeps heart shape till collection)
+        word.style.transform = 'scale(1.05)';   // slight emphasis while rotating+collecting
+        word.style.willChange = 'left, top, transform';
+        
+        // when transition ends, mark as collected and remove from DOM
+        const onFinish = (e) => {
+          if (e.propertyName === 'left' || e.propertyName === 'top') {
+            word.removeEventListener('transitionend', onFinish);
+            collectWord(word, e);
+          }
+        };
+        word.addEventListener('transitionend', onFinish);
+        
+        // safety fallback: if transitionend fails, collect anyway after 1.2s
+        setTimeout(() => {
+          if (word.parentNode && !word.collectedFlag) {
+            if (word.parentNode) word.parentNode.removeChild(word);
+            if (!word.collectedFlag) {
+              word.collectedFlag = true;
+              collectedCount++;
+              updateEFillProgress();
+              if (collectedCount === totalWords) finalCompletionEffect();
+            }
+          }
+        }, 1200);
+      });
+    }
+    
+    // ---- responsive reposition when window resizes: rebuild heart? ----
+    // BUT preserving heart shape is critical. To keep heart perfect on resize,
+    // we will reposition all words based on new window center, while the collection hasn't started.
+    // This ensures heart remains beautiful even if user rotates phone/resizes.
+    function repositionHeart() {
+      if (collectionStarted) return;  // collection in progress — don't disturb flying words
+    
+      const newCenterX = window.innerWidth / 2;
+      const newCenterY = window.innerHeight / 2;
+      const scaleFactor = 24;
+      
+      wordElements.forEach((word, idx) => {
+        if (!word.parentNode) return;
+        if (word.collectedFlag) return; // already collected during resize (rare)
+        const originalPoint = points[idx];
+        if (!originalPoint) return;
+        const posX = newCenterX + originalPoint.x * scaleFactor;
+        const posY = newCenterY - originalPoint.y * scaleFactor;
+        word.style.left = `${posX}px`;
+        word.style.top = `${posY}px`;
+        word.dataset.origLeft = posX;
+        word.dataset.origTop = posY;
+      });
+      
+      // also keep center E perfectly centered
+      if (centerE) {
+        centerE.style.left = '50%';
+        centerE.style.top = '50%';
+        centerE.style.transform = 'translate(-50%, -50%)';
+      }
+    }
+    
+    // ---- INITIAL TIMELINE: let heart bloom and after 4.2 seconds, words start flying to E ----
+    // central E appears fully by 3.4s. we wait a little more to admire heart and spinning words.
+    // during that time all words spin gracefully in heart shape.
+    setTimeout(() => {
+      if (!collectionStarted) {
+        startCollection();
+      }
+    }, 4400);  // after 4.4 seconds collection begins: words gather into "E" like a magnetic heart
+    
+    // also add a resize listener for robustness (reposition while heart visible)
+    window.addEventListener('resize', () => {
+      repositionHeart();
+      // If collection not yet started, keep heart perfectly aligned
+    });
+    
+    // little polish: instantly adjust on load after fonts are ready
+    window.addEventListener('load', () => {
+      repositionHeart();
+      // small delay to recompute perfect positions after any layout shift
+      setTimeout(repositionHeart, 100);
+    });
+    
+    // Alternative: if any word hasn't been collected after start due to transition glitch, 
+    // we force final consistency after 6 seconds (just extra safety)
+    setTimeout(() => {
+      if (collectionStarted && collectedCount < totalWords) {
+        // any word still alive? force collect all remaining
+        const remaining = document.querySelectorAll('.text');
+        remaining.forEach(word => {
+          if (word.parentNode && !word.collectedFlag) {
+            if (word.parentNode) word.parentNode.removeChild(word);
+            if (!word.collectedFlag) {
+              word.collectedFlag = true;
+              collectedCount++;
+              updateEFillProgress();
+            }
+          }
+        });
+        if (collectedCount === totalWords) finalCompletionEffect();
+      }
+    }, 7000);
+    
+    // Additional visual: words already have SPIN class, so they will continuously rotate in place
+    // preserving the gorgeous heart shape before the collection. And after collection starts,
+    // they keep rotating while flying to center, giving magical vortex effect.
+    // we ensure that the words display "I love you" in dark red, satisfying the requirement.
+    // heart shape remains until collection begins!
+    console.log(`❤️ Crimson heart loaded with ${totalWords} spinning 'I love you' messages. E will consume them at 4.4s.`);
+  })();
+</script>
 </body>
 </html>
