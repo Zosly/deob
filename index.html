@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>at the end its all my fault</title>
+    <title>Requiem</title>
     <style>
         * {
             margin: 0;
@@ -115,7 +115,6 @@
             function initAudio() {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    // Generate a realistic gunshot using noise and transients
                     const sampleRate = audioContext.sampleRate;
                     const duration = 1.2;
                     const bufferSize = sampleRate * duration;
@@ -161,19 +160,31 @@
             
             // ---------- STATE ----------
             let hasActed = false;           
-            let actingPhase = 0;            // 0 = idle, 1 = shake/blur active, 2 = fade out
+            let actingPhase = 0;            // 0 = idle, 1 = bleeding active, 2 = fade out
             let shakeIntensity = 0;
             let blurAmount = 0;
             let fadeOpacity = 0;
-            let bloodParticles = [];
+            
+            // Dynamic blood system: blood pool that grows over time
+            let bloodPool = {
+                active: false,
+                radius: 0,           // current spread radius
+                maxRadius: 0,
+                centerX: 0,
+                centerY: 0,
+                growthRate: 0.8,     // pixels per frame
+                bloodDrops: []       // additional splatter drops
+            };
+            
             let ragdollAngle = 0;
+            let bleedTimer = 0;       // time since shot (frames)
+            const BLEED_DURATION = 180; // frames until full coverage and fade out (~3 sec at 60fps)
             
             // ---------- CHARACTER: realistic human proportions, arms connected, tall body ----------
             let character = {
                 headX: 0, headY: 0,
                 neckX: 0, neckY: 0,
                 bodyX: 0, bodyY: 0,
-                // arm joints (shoulder, elbow, hand)
                 leftShoulderX: 0, leftShoulderY: 0,
                 leftElbowX: 0, leftElbowY: 0,
                 leftHandX: 0, leftHandY: 0,
@@ -186,111 +197,165 @@
             
             function updateCharacterPositions() {
                 const headCenterX = width * 0.5;
-                const headCenterY = height * 0.38;     // head position
+                const headCenterY = height * 0.38;
                 
                 character.headX = headCenterX;
                 character.headY = headCenterY;
                 character.neckX = headCenterX;
                 character.neckY = headCenterY + 32;
-                
-                // body: tall, starts at neck, goes down
                 character.bodyX = headCenterX;
                 character.bodyY = character.neckY + 8;
                 
-                // Shoulders (broad enough)
                 character.leftShoulderX = character.bodyX - 42;
                 character.leftShoulderY = character.bodyY - 4;
                 character.rightShoulderX = character.bodyX + 42;
                 character.rightShoulderY = character.bodyY - 4;
                 
-                // LEFT ARM (natural hanging, tall, connected)
                 character.leftElbowX = character.leftShoulderX - 28;
                 character.leftElbowY = character.leftShoulderY + 52;
                 character.leftHandX = character.leftElbowX - 12;
                 character.leftHandY = character.leftElbowY + 48;
                 
-                // RIGHT ARM (bent upwards, holding gun to head - realistic human anatomy)
                 character.rightElbowX = character.rightShoulderX + 18;
                 character.rightElbowY = character.rightShoulderY + 28;
                 character.rightHandX = character.headX + 38;
                 character.rightHandY = character.headY - 2;
                 
-                // Gun position at hand/temple area
                 character.gunX = character.rightHandX + 8;
                 character.gunY = character.rightHandY + 2;
                 character.gunAngle = -0.18;
             }
             
-            // ---------- BLOOD SYSTEM (deep red realistic) ----------
-            function addBloodSplatter(x, y, isIntense = true) {
-                const count = isIntense ? 55 : 28;
-                for(let i=0; i<count; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * (isIntense ? 85 : 55);
-                    const offsetX = Math.cos(angle) * distance * (Math.random() * 0.7 + 0.3);
-                    const offsetY = Math.sin(angle) * distance * 0.55 + Math.random() * 14;
-                    bloodParticles.push({
-                        x: x + offsetX,
-                        y: y + offsetY + 5,
-                        radius: Math.random() * 7 + 3.5,
-                        alpha: 0.94,
-                        life: 1.0
-                    });
-                }
-                // heavy pool under head and torso
-                for(let i=0;i<60;i++) {
-                    bloodParticles.push({
-                        x: x + (Math.random() - 0.5) * 120,
-                        y: y + 32 + Math.random() * 55,
-                        radius: Math.random() * 10 + 5,
-                        alpha: 0.95,
-                        life: 1.0
+            // ---------- DYNAMIC BLOOD SYSTEM ----------
+            function startBleeding() {
+                bloodPool.active = true;
+                bloodPool.radius = 8;
+                // Max radius: enough to cover large floor area around the body
+                bloodPool.maxRadius = Math.min(width, height) * 0.65;
+                bloodPool.centerX = character.bodyX;
+                bloodPool.centerY = character.bodyY + 85;
+                
+                // Initial blood drops from head wound (realistic spray)
+                for(let i=0; i<35; i++) {
+                    const angle = (Math.random() - 0.5) * Math.PI * 1.4;
+                    const dist = Math.random() * 55;
+                    bloodPool.bloodDrops.push({
+                        x: character.headX + Math.cos(angle) * dist * 0.9,
+                        y: character.headY + 15 + Math.sin(angle) * dist * 0.7,
+                        radius: Math.random() * 6 + 2.5,
+                        alpha: 0.95
                     });
                 }
             }
             
-            function updateBlood() {
-                for(let i=0; i<bloodParticles.length; i++) {
-                    bloodParticles[i].life -= 0.0022;
-                    if(bloodParticles[i].life <= 0.02 || bloodParticles[i].y > height + 60) {
-                        bloodParticles.splice(i,1);
-                        i--;
+            function updateBloodSpread() {
+                if (!bloodPool.active) return;
+                
+                bleedTimer++;
+                
+                // Grow blood pool radius over time (accelerating slightly)
+                if (bloodPool.radius < bloodPool.maxRadius) {
+                    let growth = bloodPool.growthRate;
+                    // accelerate as blood flows
+                    if (bleedTimer > 40) growth *= 1.3;
+                    if (bleedTimer > 90) growth *= 1.5;
+                    bloodPool.radius += growth;
+                    if (bloodPool.radius > bloodPool.maxRadius) bloodPool.radius = bloodPool.maxRadius;
+                }
+                
+                // Add new blood drops periodically from head wound (continuing bleed)
+                if (bleedTimer % 6 === 0 && bleedTimer < BLEED_DURATION - 30) {
+                    for(let i=0; i<3; i++) {
+                        const angle = (Math.random() - 0.5) * Math.PI * 1.2;
+                        const dist = Math.random() * 45;
+                        bloodPool.bloodDrops.push({
+                            x: character.headX + Math.cos(angle) * dist * 0.8,
+                            y: character.headY + 12 + Math.sin(angle) * dist * 0.6 + Math.random() * 15,
+                            radius: Math.random() * 5 + 2,
+                            alpha: 0.92
+                        });
                     }
                 }
-            }
-            
-            function drawBlood() {
-                for(let b of bloodParticles) {
-                    ctx.save();
-                    ctx.shadowBlur = 0;
-                    ctx.beginPath();
-                    ctx.ellipse(b.x, b.y, b.radius, b.radius * 0.65, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(100, 14, 14, ${b.alpha * 0.92})`;
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.ellipse(b.x-2, b.y-1.5, b.radius*0.5, b.radius*0.45, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(50, 5, 5, 0.88)`;
-                    ctx.fill();
-                    ctx.restore();
+                
+                // Also add some drip drops that slide down the body
+                if (bleedTimer % 8 === 0 && bleedTimer < BLEED_DURATION - 20) {
+                    bloodPool.bloodDrops.push({
+                        x: character.bodyX + (Math.random() - 0.5) * 40,
+                        y: character.bodyY + 50 + Math.random() * 80,
+                        radius: Math.random() * 5 + 2,
+                        alpha: 0.9
+                    });
+                }
+                
+                // Limit blood drops array size
+                if (bloodPool.bloodDrops.length > 400) {
+                    bloodPool.bloodDrops = bloodPool.bloodDrops.slice(-350);
+                }
+                
+                // Transition to fade out when blood pool is nearly full
+                if (bleedTimer >= BLEED_DURATION && actingPhase === 1) {
+                    actingPhase = 2;  // start fade out
+                    fadeOpacity = 0;
                 }
             }
             
-            // ---------- DRAW REALISTIC GUN (semi-auto pistol) ----------
+            function drawBloodPool() {
+                if (!bloodPool.active) return;
+                
+                // Draw main spreading blood pool (radial gradient for realistic spread)
+                const gradient = ctx.createRadialGradient(
+                    bloodPool.centerX, bloodPool.centerY, 5,
+                    bloodPool.centerX, bloodPool.centerY, bloodPool.radius
+                );
+                gradient.addColorStop(0, "rgba(85, 12, 12, 0.95)");
+                gradient.addColorStop(0.4, "rgba(75, 10, 10, 0.85)");
+                gradient.addColorStop(0.7, "rgba(60, 8, 8, 0.7)");
+                gradient.addColorStop(1, "rgba(45, 5, 5, 0.4)");
+                
+                ctx.beginPath();
+                ctx.ellipse(bloodPool.centerX, bloodPool.centerY, bloodPool.radius, bloodPool.radius * 0.65, 0, 0, Math.PI*2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw secondary pool spreading toward edges
+                if (bloodPool.radius > 80) {
+                    const secondGrad = ctx.createRadialGradient(
+                        bloodPool.centerX - 20, bloodPool.centerY + 15, 10,
+                        bloodPool.centerX - 20, bloodPool.centerY + 15, bloodPool.radius * 0.7
+                    );
+                    secondGrad.addColorStop(0, "rgba(70, 10, 10, 0.7)");
+                    secondGrad.addColorStop(1, "rgba(40, 5, 5, 0.3)");
+                    ctx.beginPath();
+                    ctx.ellipse(bloodPool.centerX - 25, bloodPool.centerY + 20, bloodPool.radius * 0.55, bloodPool.radius * 0.4, 0, 0, Math.PI*2);
+                    ctx.fillStyle = secondGrad;
+                    ctx.fill();
+                }
+                
+                // Draw individual blood drops/splatters
+                for(let drop of bloodPool.bloodDrops) {
+                    ctx.beginPath();
+                    ctx.ellipse(drop.x, drop.y, drop.radius, drop.radius * 0.7, 0, 0, Math.PI*2);
+                    ctx.fillStyle = `rgba(95, 12, 12, ${drop.alpha * 0.9})`;
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(drop.x - 1, drop.y - 0.5, drop.radius * 0.45, drop.radius * 0.35, 0, 0, Math.PI*2);
+                    ctx.fillStyle = `rgba(55, 5, 5, 0.85)`;
+                    ctx.fill();
+                }
+            }
+            
+            // ---------- DRAW REALISTIC GUN ----------
             function drawRealisticGun(x, y, angle, isFallen = false) {
                 ctx.save();
                 ctx.translate(x, y);
                 if(angle) ctx.rotate(angle);
                 ctx.fillStyle = "#232323";
                 ctx.shadowBlur = 1.5;
-                // main body
                 ctx.fillRect(-24, -7, 48, 15);
-                // slide serrations
                 ctx.fillStyle = "#3a3a3a";
                 ctx.fillRect(-20, -9, 38, 4);
-                // barrel
                 ctx.fillStyle = "#181818";
                 ctx.fillRect(20, -5, 18, 9);
-                // grip with texture
                 ctx.beginPath();
                 ctx.moveTo(-24, -3);
                 ctx.lineTo(-32, 14);
@@ -298,22 +363,19 @@
                 ctx.fill();
                 ctx.fillStyle = "#2e2a24";
                 ctx.fillRect(-30, 5, 16, 9);
-                // trigger guard
                 ctx.beginPath();
                 ctx.arc(-14, 0, 5.5, 0, Math.PI * 1.85);
                 ctx.strokeStyle = "#444";
                 ctx.lineWidth = 1.8;
                 ctx.stroke();
-                // trigger
                 ctx.fillStyle = "#555";
                 ctx.fillRect(-16, -1, 2, 5);
-                // hammer
                 ctx.fillStyle = "#2a2a2a";
                 ctx.fillRect(6, -10, 7, 6);
                 ctx.restore();
             }
             
-            // ---------- DRAW HUMAN FIGURE (proportional, tall, arms connected, crown, Z on head) ----------
+            // ---------- DRAW HUMAN FIGURE (featureless black, tall, arms connected) ----------
             function drawHumanFigure() {
                 const hX = character.headX;
                 const hY = character.headY;
@@ -330,21 +392,19 @@
                     ctx.translate(-bX, -(bY + 15));
                 }
                 
-                // TORSO (elongated, realistic width)
+                // TORSO
                 ctx.fillStyle = "#000000";
                 ctx.fillRect(bX-38, bY-4, 76, 138);
-                
-                // PELVIS/LOWER BODY
                 ctx.fillRect(bX-32, bY+128, 64, 32);
                 
-                // LEGS (long, straight)
+                // LEGS
                 ctx.fillRect(bX-32, bY+148, 26, 78);
                 ctx.fillRect(bX+6, bY+148, 26, 78);
                 
-                // NECK (connecting head to torso)
+                // NECK
                 ctx.fillRect(nX-14, nY-4, 28, 24);
                 
-                // HEAD (round, solid black)
+                // HEAD (round, black)
                 ctx.beginPath();
                 ctx.arc(hX, hY, 36, 0, Math.PI*2);
                 ctx.fillStyle = "#000000";
@@ -353,43 +413,25 @@
                 ctx.lineWidth = 1.2;
                 ctx.stroke();
                 
-                // ----- CROWN on head (metallic, dark) -----
-                ctx.fillStyle = "#4a3e30";
-                ctx.beginPath();
-                ctx.moveTo(hX-32, hY-26);
-                ctx.lineTo(hX-20, hY-42);
-                ctx.lineTo(hX-6, hY-30);
-                ctx.lineTo(hX+6, hY-42);
-                ctx.lineTo(hX+20, hY-30);
-                ctx.lineTo(hX+32, hY-26);
-                ctx.lineTo(hX+28, hY-18);
-                ctx.lineTo(hX-28, hY-18);
-                ctx.fill();
-                ctx.fillStyle = "#7a684e";
-                ctx.fillRect(hX-26, hY-26, 52, 9);
-                // crown jewels (simple)
-                ctx.fillStyle = "#9a8a6a";
-                for(let i=-18; i<=18; i+=12) {
-                    ctx.fillRect(hX+i, hY-37, 3, 12);
+                // WOUND VISUAL (after shot - small dark hole with blood around)
+                if(isDead && bleedTimer > 0) {
+                    ctx.beginPath();
+                    ctx.arc(hX + 6, hY - 4, 8, 0, Math.PI*2);
+                    ctx.fillStyle = "#2a0505";
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(hX + 4, hY - 6, 4, 0, Math.PI*2);
+                    ctx.fillStyle = "#4a0808";
+                    ctx.fill();
                 }
                 
-                // Z letter on forehead (pale grey)
-                ctx.font = `bold 44px "Courier New", monospace`;
-                ctx.fillStyle = "#5a5a5a";
-                ctx.fillText("Z", hX - 24, hY + 14);
-                ctx.fillStyle = "#8a8a8a";
-                ctx.fillText("Z", hX - 25, hY + 13);
-                
-                // ---------- LEFT ARM (connected, natural hang, tall) ----------
-                ctx.fillStyle = "#000000";
-                // upper arm
+                // LEFT ARM
                 ctx.beginPath();
                 ctx.moveTo(character.leftShoulderX, character.leftShoulderY);
                 ctx.lineTo(character.leftElbowX, character.leftElbowY);
                 ctx.lineTo(character.leftElbowX + 12, character.leftElbowY + 8);
                 ctx.lineTo(character.leftShoulderX + 8, character.leftShoulderY + 6);
                 ctx.fill();
-                // forearm
                 ctx.beginPath();
                 ctx.moveTo(character.leftElbowX, character.leftElbowY);
                 ctx.lineTo(character.leftHandX, character.leftHandY);
@@ -397,15 +439,13 @@
                 ctx.lineTo(character.leftElbowX + 12, character.leftElbowY + 8);
                 ctx.fill();
                 
-                // ---------- RIGHT ARM (bent, holding gun to head, properly connected) ----------
-                // upper arm
+                // RIGHT ARM
                 ctx.beginPath();
                 ctx.moveTo(character.rightShoulderX, character.rightShoulderY);
                 ctx.lineTo(character.rightElbowX, character.rightElbowY);
                 ctx.lineTo(character.rightElbowX - 10, character.rightElbowY + 8);
                 ctx.lineTo(character.rightShoulderX - 6, character.rightShoulderY + 6);
                 ctx.fill();
-                // forearm (pointing to head)
                 ctx.beginPath();
                 ctx.moveTo(character.rightElbowX, character.rightElbowY);
                 ctx.lineTo(character.rightHandX, character.rightHandY);
@@ -413,7 +453,6 @@
                 ctx.lineTo(character.rightElbowX - 10, character.rightElbowY + 8);
                 ctx.fill();
                 
-                // DRAW REALISTIC GUN (only if not dead, else fallen)
                 if(!isDead) {
                     drawRealisticGun(character.gunX, character.gunY, character.gunAngle, false);
                 } else {
@@ -423,50 +462,36 @@
                 ctx.restore();
             }
             
-            // ---------- SHOOT SEQUENCE (gunshot sound, blood, ragdoll, shake) ----------
+            // ---------- SHOOT SEQUENCE ----------
             function startShootSequence() {
                 if(hasActed) return;
                 hasActed = true;
-                actingPhase = 1;
-                shakeIntensity = 19;
-                blurAmount = 13.5;
+                actingPhase = 1;      // bleeding phase
+                shakeIntensity = 20;
+                blurAmount = 14;
+                bleedTimer = 0;
                 
-                // play gunshot
                 playGunshot();
                 
-                // massive blood from head
-                const headPosX = character.headX;
-                const headPosY = character.headY + 10;
-                addBloodSplatter(headPosX, headPosY, true);
+                // Start the dynamic blood spread (not instant pool)
+                startBleeding();
                 
-                // directional spray (exit wound)
-                for(let i=0;i<45;i++) {
-                    const angle = (Math.random() - 0.5) * Math.PI * 1.3;
-                    const dist = Math.random() * 72;
-                    bloodParticles.push({
-                        x: headPosX + Math.cos(angle) * dist * 0.85,
-                        y: headPosY + Math.sin(angle) * dist * 0.65 + 10,
-                        radius: Math.random() * 8 + 3.5,
-                        alpha: 0.96,
-                        life: 1.0
+                // Initial head wound blood spray (few drops)
+                for(let i=0;i<25;i++) {
+                    const angle = (Math.random() - 0.5) * Math.PI * 1.2;
+                    const dist = Math.random() * 40;
+                    bloodPool.bloodDrops.push({
+                        x: character.headX + Math.cos(angle) * dist,
+                        y: character.headY + 10 + Math.sin(angle) * dist * 0.7,
+                        radius: Math.random() * 5 + 2,
+                        alpha: 0.95
                     });
                 }
                 
-                // heavy pool under body
-                for(let i=0;i<80;i++) {
-                    bloodParticles.push({
-                        x: character.bodyX + (Math.random() - 0.5) * 110,
-                        y: character.bodyY + 75 + Math.random() * 70,
-                        radius: Math.random() * 11 + 6,
-                        alpha: 0.94,
-                        life: 1.0
-                    });
-                }
+                // Ragdoll effect
+                ragdollAngle = -0.42;
                 
-                // ragdoll effect: body slumps forward and down
-                ragdollAngle = -0.44;
-                
-                // disable button
+                // Disable button
                 const btn = document.getElementById('carelessBtn');
                 if(btn) {
                     btn.disabled = true;
@@ -476,37 +501,36 @@
                 }
             }
             
-            // ---------- POST PROCESSING: SHAKE, BLUR, FADE OUT (no kick, just fade to black) ----------
+            // ---------- POST PROCESSING ----------
             function updatePostProcessing() {
                 if(actingPhase === 1) {
-                    shakeIntensity *= 0.91;
-                    blurAmount *= 0.93;
-                    if(blurAmount < 0.7 && shakeIntensity < 0.5) {
-                        actingPhase = 2;
-                        fadeOpacity = 0;
-                    }
+                    // Shake and blur fade out over time
+                    shakeIntensity *= 0.94;
+                    blurAmount *= 0.94;
+                    
+                    // Update blood spread
+                    updateBloodSpread();
+                    
+                    // Ragdoll settling
+                    ragdollAngle += ( -0.49 - ragdollAngle ) * 0.09;
+                    if(ragdollAngle < -0.49) ragdollAngle = -0.49;
                 }
                 else if(actingPhase === 2) {
                     fadeOpacity += 0.012;
                     if(fadeOpacity >= 1.0) {
                         fadeOpacity = 1.0;
-                        actingPhase = 3;   // black screen, no kick
+                        actingPhase = 3;   // frozen black screen
                     }
-                }
-                
-                if(hasActed && actingPhase < 2) {
-                    ragdollAngle += ( -0.49 - ragdollAngle ) * 0.085;
-                    if(ragdollAngle < -0.49) ragdollAngle = -0.49;
                 }
             }
             
             function applyShakeAndBlur() {
-                if(actingPhase === 1 && (shakeIntensity > 0.6 || blurAmount > 0.4)) {
+                if(actingPhase === 1 && (shakeIntensity > 0.8 || blurAmount > 0.5)) {
                     const dx = (Math.random() - 0.5) * shakeIntensity;
                     const dy = (Math.random() - 0.5) * shakeIntensity * 0.7;
                     canvas.style.transform = `translate(${dx}px, ${dy}px)`;
-                    let blurValue = Math.min(blurAmount, 11);
-                    if(blurValue > 0.3) {
+                    let blurValue = Math.min(blurAmount, 12);
+                    if(blurValue > 0.4) {
                         canvas.style.filter = `blur(${blurValue}px)`;
                     } else {
                         canvas.style.filter = "none";
@@ -524,7 +548,7 @@
                 }
             }
             
-            // ---------- BACKGROUND: dark, minimal, industrial ----------
+            // ---------- BACKGROUND ----------
             function drawBackground() {
                 const grad = ctx.createLinearGradient(0, 0, 0, height);
                 grad.addColorStop(0, "#08080c");
@@ -536,36 +560,12 @@
                 for(let i=0;i<160;i++) {
                     ctx.fillRect((i*131)%width, (i*83)%height, 1.2, 1.2);
                 }
-                // floor line / shadow
                 ctx.beginPath();
                 ctx.moveTo(0, height*0.76);
                 ctx.lineTo(width, height*0.73);
                 ctx.strokeStyle = "#1c1818";
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
-            }
-            
-            function drawBloodFloor() {
-                for(let b of bloodParticles) {
-                    ctx.beginPath();
-                    ctx.ellipse(b.x, b.y, b.radius, b.radius * 0.6, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(95, 14, 14, ${b.alpha * 0.9})`;
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.ellipse(b.x-1.5, b.y-1, b.radius*0.5, b.radius*0.4, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(45, 4, 4, 0.85)`;
-                    ctx.fill();
-                }
-                if(hasActed) {
-                    ctx.fillStyle = "#771515cc";
-                    ctx.beginPath();
-                    ctx.ellipse(character.headX, character.headY+48, 58, 28, 0, 0, Math.PI*2);
-                    ctx.fill();
-                    ctx.fillStyle = "#541010cc";
-                    ctx.beginPath();
-                    ctx.ellipse(character.bodyX, character.bodyY+98, 75, 36, 0, 0, Math.PI*2);
-                    ctx.fill();
-                }
             }
             
             // ---------- RENDER LOOP ----------
@@ -579,13 +579,19 @@
                 }
                 
                 updateCharacterPositions();
-                updateBlood();
                 updatePostProcessing();
                 
                 drawBackground();
-                drawBloodFloor();
+                drawBloodPool();      // dynamic spreading blood
                 drawHumanFigure();
-                drawBlood();
+                
+                // Additional blood dripping from head wound (active bleeding effect)
+                if(hasActed && bloodPool.active && bleedTimer < BLEED_DURATION) {
+                    ctx.beginPath();
+                    ctx.ellipse(character.headX + 3, character.headY + 12, 5, 8, 0, 0, Math.PI*2);
+                    ctx.fillStyle = "rgba(85, 12, 12, 0.85)";
+                    ctx.fill();
+                }
                 
                 drawFadeOverlay();
                 applyShakeAndBlur();
