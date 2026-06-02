@@ -2,492 +2,505 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>WEIRD CEREMONY - The Unserious Button</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>untitled scene</title>
     <style>
         * {
-            user-select: none;
-            cursor: crosshair;
-        }
-        body {
-            background: repeating-linear-gradient(45deg, #2a2a2f 0px, #2a2a2f 20px, #1e1e26 20px, #1e1e26 40px);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Courier New', 'Comic Sans MS', 'Papyrus', monospace;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
         }
 
-        .weird-container {
-            background: #f0e2b6;
-            border-radius: 80px 20px 80px 20px;
-            padding: 20px 30px 30px 30px;
-            box-shadow: 12px 18px 0 #8a6eff, -4px -4px 0 #ffaa88, inset 0 0 0 3px #fffcdd;
-            border: 2px solid #ff66aa;
+        body {
+            background: #0a0c12;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', 'SF Mono', monospace;
         }
 
         canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: block;
-            margin: 0 auto;
-            border-radius: 38px 10px 58px 10px;
-            box-shadow: 6px 10px 0 #3a2a4e;
-            background-color: #f7e9cf;
+            object-fit: cover;
+            background: #0f1219;
+            cursor: crosshair;
         }
 
-        .button-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 25px;
-            gap: 20px;
-            flex-wrap: wrap;
+        /* no panels, no stupid corners, no buttons visible except one minimal trigger — but still required */
+        .trigger-area {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 10;
+            opacity: 0.65;
+            transition: opacity 0.2s;
+        }
+        .trigger-area:hover {
+            opacity: 1;
         }
 
-        .weird-btn {
-            background: radial-gradient(circle at 20% 35%, #ffdd88, #ff8855);
-            border: 4px ridge #ff44aa;
-            font-size: 1.9rem;
-            font-weight: bold;
-            font-family: 'Courier New', 'Comic Sans MS', monospace;
-            padding: 10px 32px;
-            border-radius: 60px;
-            color: #2f004f;
-            text-shadow: 2px 2px 0 #ffc2a1;
+        .silent-button {
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(180, 40, 40, 0.6);
+            color: #d9c8b2;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 32px;
             letter-spacing: 2px;
             cursor: pointer;
-            transition: 0.05s linear;
-            box-shadow: 0 8px 0 #a1442a;
-            transform: rotate(-1deg);
-        }
-        .weird-btn:active {
-            transform: translateY(5px) rotate(0deg);
-            box-shadow: 0 3px 0 #a1442a;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+            text-transform: uppercase;
         }
 
-        .bizarre-sign {
-            background: #000000aa;
-            backdrop-filter: blur(8px);
-            padding: 6px 20px;
-            border-radius: 100px;
-            font-family: 'Papyrus', fantasy;
-            font-weight: bold;
-            font-size: 0.95rem;
-            color: #f6ffb0;
-            border-left: 6px solid #ff66c0;
-            border-right: 6px solid #00ffc3;
+        .silent-button:hover {
+            background: rgba(40, 25, 25, 0.9);
+            border-color: #b33e3e;
+            color: #ffe0b5;
+            box-shadow: 0 0 14px rgba(180, 40, 40, 0.3);
         }
 
-        .caption {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.75rem;
-            background: #fff6e0;
-            display: inline-block;
-            width: auto;
-            padding: 4px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            color: #aa44aa;
-            font-family: monospace;
-        }
-        footer {
-            display: flex;
-            justify-content: center;
+        .silent-button:active {
+            transform: scale(0.96);
         }
 
-        @keyframes wobble {
-            0% { transform: translate(0px, 0px) rotate(0deg);}
-            25% { transform: translate(2px, -1px) rotate(1deg);}
-            75% { transform: translate(-1px, 1px) rotate(-1deg);}
-            100% { transform: translate(0px, 0px);}
+        /* no decorative panels, no banners, no messages except pure canvas */
+        @media (max-width: 700px) {
+            .trigger-area {
+                bottom: 18px;
+                right: 18px;
+            }
+            .silent-button {
+                font-size: 0.7rem;
+                padding: 6px 14px;
+            }
         }
     </style>
 </head>
 <body>
-<div>
-    <div class="weird-container">
-        <canvas id="absurdCanvas" width="800" height="500" style="width:800px;height:500px"></canvas>
-        <div class="button-area">
-            <div class="bizarre-sign" id="weirdMessage">~ DIE WORDS FLOATING ~</div>
-            <button class="weird-btn" id="sillyTriggerBtn">I DON'T CARE</button>
-        </div>
-        <div class="caption">
-            [ weird theatrical zone | clicking the button triggers a very unusual reaction ]
-        </div>
+    <canvas id="bleakCanvas"></canvas>
+    <div class="trigger-area">
+        <button id="finalActBtn" class="silent-button">i don't care</button>
     </div>
-</div>
 
-<script>
-    (function(){
-        const canvas = document.getElementById('absurdCanvas');
-        const ctx = canvas.getContext('2d');
-        const W = 800, H = 500;
-
-        // STATE
-        let hasPerformedAction = false;    // the "shot himself" but in absurd silly way
-        let meltdownTimer = 0;             // post-click chaos frames
-        
-        // "Die" word array: random color only red or black, random positions
-        let dieWords = [];
-        const MAX_DIE = 16;
-        let spawnInterval;
-        
-        // floating "SUICIDE" word rotation around body
-        let suicideRotationAngle = 0;
-        
-        // character silly animation
-        let headBob = 0;
-        
-        // helper random
-        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-        
-        // spawn DIE word (only red or black)
-        function spawnDieWord() {
-            if (dieWords.length >= MAX_DIE + 2) dieWords.shift();
-            const x = rand(30, W - 60);
-            const y = rand(40, H - 80);
-            // only red or black
-            const color = Math.random() < 0.5 ? "#e34234" : "#121212";
-            dieWords.push({
-                x, y, color,
-                size: rand(20, 46),
-                wiggleSeed: Math.random() * Math.PI * 2,
-                createdAt: Date.now()
+    <script>
+        (function() {
+            // ---------- FULLSCREEN CANVAS ----------
+            const canvas = document.getElementById('bleakCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            let width, height;
+            
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                redrawImmediate = true;
             });
-            const msgDiv = document.getElementById("weirdMessage");
-            msgDiv.innerHTML = "! DIE appears (red or black) !";
-            setTimeout(() => {
-                if (!hasPerformedAction) msgDiv.innerHTML = "~ DIE WORDS FLOATING ~";
-                else msgDiv.innerHTML = "[ FINAL ECHO ]";
-            }, 1400);
-        }
-        
-        function startDieSpawning() {
-            if (spawnInterval) clearInterval(spawnInterval);
-            spawnInterval = setInterval(() => {
-                if (!hasPerformedAction) {
-                    spawnDieWord();
-                    if (Math.random() < 0.45 && dieWords.length < MAX_DIE) spawnDieWord();
+            resizeCanvas();
+            
+            // ---------- STATE ----------
+            let hasActed = false;          // if the irreversible act happened
+            let actTimer = 0;              // visual aftermath timer (frames)
+            
+            // ---------- DIE WORDS (random place, only red or black) ----------
+            let dieWords = [];
+            const MAX_DIE_WORDS = 22;
+            let spawnInterval = null;
+            
+            // helper random
+            function randRange(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+            
+            // spawn "DIE" word at random canvas position, color: red (#b12222) or black (#111111)
+            function spawnDieWord() {
+                if (!canvas || width === 0) return;
+                const x = randRange(40, width - 60);
+                const y = randRange(50, height - 70);
+                const colorChoice = Math.random() < 0.5 ? "#b12222" : "#111111";
+                dieWords.push({
+                    x: x,
+                    y: y,
+                    color: colorChoice,
+                    size: randRange(22, 48),
+                    life: 1.0,
+                    driftX: (Math.random() - 0.5) * 0.4,
+                    driftY: (Math.random() - 0.5) * 0.3,
+                    createdAt: Date.now()
+                });
+                if (dieWords.length > MAX_DIE_WORDS) dieWords.shift();
+            }
+            
+            // periodic spawner (only if not acted)
+            function startDieSpawner() {
+                if (spawnInterval) clearInterval(spawnInterval);
+                spawnInterval = setInterval(() => {
+                    if (!hasActed && document.body.contains(canvas)) {
+                        spawnDieWord();
+                        // occasionally spawn an extra for density
+                        if (Math.random() < 0.4 && dieWords.length < MAX_DIE_WORDS) spawnDieWord();
+                    }
+                }, 2100);
+                // initial words for atmosphere
+                for (let i = 0; i < 6; i++) setTimeout(() => spawnDieWord(), i * 240);
+            }
+            
+            // remove old die words after lifespan
+            function cullDieWords() {
+                const now = Date.now();
+                for (let i = dieWords.length-1; i >= 0; i--) {
+                    if (now - dieWords[i].createdAt > 24000) {
+                        dieWords.splice(i,1);
+                    }
                 }
-            }, 1900);
-            for (let i = 0; i < 4; i++) setTimeout(() => spawnDieWord(), i * 350);
-        }
-        
-        // draw all "DIE" words with slight wobble
-        function drawDieWords() {
-            for (let w of dieWords) {
+                if (!hasActed && dieWords.length < 4 && spawnInterval) {
+                    for(let i=0;i<2;i++) spawnDieWord();
+                }
+            }
+            
+            // ---------- CHARACTER & GUN: man pointing gun to his own head ----------
+            // all coordinates relative to viewport (percentage-based but we use absolute)
+            // we define a normalized anchor system: centerX = width/2, baseY = height*0.65 etc
+            let character = {
+                headX: 0, headY: 0,
+                bodyX: 0, bodyY: 0,
+                gunMuzzleX: 0, gunMuzzleY: 0
+            };
+            
+            function updateCharacterPositions() {
+                character.headX = width * 0.5;
+                character.headY = height * 0.38;
+                character.bodyX = width * 0.5;
+                character.bodyY = height * 0.65;
+                // gun tip near right temple
+                character.gunMuzzleX = character.headX + 38;
+                character.gunMuzzleY = character.headY - 6;
+            }
+            
+            // drawing the entire scene: figure, gun, "Suicide" word wrapped around body
+            // plus random DIE words already drawn separately
+            function drawFigureAndGun() {
+                if (!ctx) return;
+                const hX = character.headX;
+                const hY = character.headY;
+                const bX = character.bodyX;
+                const bY = character.bodyY;
+                const isAfterAct = hasActed;
+                
+                // ---------- SURROUNDING "SUICIDE" text around the body / guy (multiple instances) ----------
                 ctx.save();
-                ctx.font = `900 ${w.size}px "Comic Sans MS", "Courier New", monospace`;
-                ctx.shadowBlur = 3;
-                ctx.shadowColor = "#ff77aa";
-                let offsetX = 0, offsetY = 0;
-                if (hasPerformedAction) {
-                    offsetX = (Math.sin(Date.now() * 0.024 + w.wiggleSeed) * 4);
-                    offsetY = (Math.cos(Date.now() * 0.027 + w.wiggleSeed) * 3);
-                } else {
-                    offsetX = Math.sin(Date.now() * 0.01 + w.wiggleSeed) * 1.8;
-                    offsetY = Math.cos(Date.now() * 0.012 + w.wiggleSeed) * 1.5;
+                ctx.font = `bold ${isAfterAct ? 20 : 18}px "Courier New", monospace`;
+                ctx.shadowBlur = 0;
+                ctx.textAlign = "center";
+                
+                // Floating "SUICIDE" ring around torso (elliptic orbit)
+                const angle = (Date.now() * 0.0022) % (Math.PI * 2);
+                const radiusX = 74;
+                const radiusY = 48;
+                const orbitX = bX + Math.cos(angle) * radiusX;
+                const orbitY = bY + Math.sin(angle * 1.2) * radiusY - 12;
+                ctx.fillStyle = isAfterAct ? "#a14a4a" : "#7a3f3f";
+                ctx.fillText("SUICIDE", orbitX, orbitY);
+                
+                // additional "SUICIDE" words wrapping the body: near shoulder, belt, arm area
+                ctx.font = "16px 'Courier New'";
+                ctx.fillStyle = isAfterAct ? "#bf5e5e" : "#993e4a";
+                ctx.fillText("SUICIDE", bX - 68, hY + 42);
+                ctx.fillText("SUICIDE", bX + 68, hY + 88);
+                ctx.font = "italic 18px monospace";
+                ctx.fillStyle = isAfterAct ? "#cf6a6a" : "#ac4a5a";
+                ctx.fillText("SUICIDE", bX - 24, bY + 38);
+                ctx.font = "bold 15px monospace";
+                ctx.fillStyle = "#bc5a5a";
+                ctx.fillText("SUICIDE", bX + 45, hY + 124);
+                // around the head/neck area
+                ctx.font = "14px monospace";
+                ctx.fillStyle = "#ad5353";
+                ctx.fillText("SUICIDE", hX - 48, hY - 8);
+                ctx.fillText("SUICIDE", hX + 52, hY + 4);
+                
+                // ---------- DRAW THE BODY (silent, tense figure) ----------
+                // Torso (dark muted)
+                ctx.fillStyle = "#1f1c1a";
+                ctx.fillRect(bX-42, hY+42, 84, 126);
+                // legs (somber)
+                ctx.fillStyle = "#141210";
+                ctx.fillRect(bX-34, hY+162, 26, 70);
+                ctx.fillRect(bX+8, hY+162, 26, 70);
+                // neck
+                ctx.fillStyle = "#5f4a38";
+                ctx.fillRect(hX-15, hY+26, 30, 20);
+                // head (pale, grim)
+                ctx.beginPath();
+                ctx.arc(hX, hY, 32, 0, Math.PI*2);
+                ctx.fillStyle = "#dbbc97";
+                ctx.fill();
+                ctx.strokeStyle = "#3d2a1c";
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+                
+                // face: deadpan expression (empty eyes)
+                ctx.fillStyle = "#1e1915";
+                ctx.beginPath();
+                ctx.arc(hX-13, hY-5, 5, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(hX+13, hY-5, 5, 0, Math.PI*2);
+                ctx.fill();
+                // neutral mouth line
+                ctx.beginPath();
+                ctx.moveTo(hX-12, hY+12);
+                ctx.lineTo(hX+12, hY+12);
+                ctx.strokeStyle = "#442a1a";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // RIGHT ARM & GUN (pointing to head)
+                if(!isAfterAct) {
+                    // arm reaching upward to temple
+                    ctx.beginPath();
+                    ctx.moveTo(bX+32, hY+54);
+                    ctx.quadraticCurveTo(bX+62, hY+28, character.gunMuzzleX-12, character.gunMuzzleY+2);
+                    ctx.lineTo(character.gunMuzzleX-20, character.gunMuzzleY+8);
+                    ctx.fillStyle = "#6e5340";
+                    ctx.fill();
+                    
+                    // gun (dark grey metallic, serious)
+                    ctx.fillStyle = "#2e2a28";
+                    ctx.fillRect(character.gunMuzzleX-22, character.gunMuzzleY-5, 28, 12);
+                    ctx.fillStyle = "#4a4240";
+                    ctx.fillRect(character.gunMuzzleX-8, character.gunMuzzleY-8, 12, 18);
+                    ctx.fillStyle = "#1f1d1b";
+                    ctx.fillRect(character.gunMuzzleX-4, character.gunMuzzleY-2, 20, 7);
+                    // trigger guard
+                    ctx.beginPath();
+                    ctx.arc(character.gunMuzzleX-16, character.gunMuzzleY+3, 4, 0, Math.PI*2);
+                    ctx.fillStyle = "#665544";
+                    ctx.fill();
+                } 
+                else {
+                    // AFTER SHOT: slumped figure, blood, gun falls, visceral change
+                    ctx.fillStyle = "#1f1a17";
+                    ctx.fillRect(bX-44, hY+45, 88, 118);
+                    // head tilted back with wound
+                    ctx.save();
+                    ctx.translate(hX+4, hY+10);
+                    ctx.rotate(0.35);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 32, 0, Math.PI*2);
+                    ctx.fillStyle = "#c8aa86";
+                    ctx.fill();
+                    ctx.fillStyle = "#831a1a";
+                    ctx.beginPath();
+                    ctx.ellipse(14, -14, 14, 9, 0, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.fillStyle = "#a52222";
+                    for(let s=0; s<14; s++) {
+                        ctx.beginPath();
+                        ctx.arc(12 + (Math.random()*12-6), -18 + (Math.random()*18), Math.random()*4+2, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                    
+                    // blood traces
+                    ctx.fillStyle = "#8b2222";
+                    ctx.beginPath();
+                    ctx.ellipse(hX+6, hY+48, 38, 18, 0, 0, Math.PI*2);
+                    ctx.fill();
+                    // fallen gun on ground
+                    ctx.fillStyle = "#2f2b28";
+                    ctx.fillRect(bX+30, hY+180, 40, 10);
+                    ctx.fillRect(bX+46, hY+172, 12, 18);
+                    // distorted "SUICIDE" echo
+                    ctx.font = "bold 18px monospace";
+                    ctx.fillStyle = "#be5a5a";
+                    ctx.fillText("SUICIDE", hX-42, hY+120);
+                    ctx.fillText("SILENCE", bX-30, bY+48);
                 }
-                ctx.fillStyle = w.color;
-                ctx.fillText("DIE", w.x + offsetX, w.y + offsetY);
-                // extra small glitch mark for weirdness
-                if (w.color === "#e34234") {
-                    ctx.font = `${w.size-10}px monospace`;
-                    ctx.fillStyle = "#ff7777";
-                    ctx.fillText("/", w.x + w.size*0.5, w.y - 6);
-                } else {
-                    ctx.fillStyle = "#888888";
-                    ctx.font = `${w.size-8}px monospace`;
-                    ctx.fillText("x", w.x - 10, w.y - 4);
-                }
+                
+                // LEFT ARM (hanging, tense)
+                ctx.beginPath();
+                ctx.moveTo(bX-44, hY+58);
+                ctx.lineTo(bX-78, hY+92);
+                ctx.lineTo(bX-52, hY+108);
+                ctx.fillStyle = "#5f4736";
+                ctx.fill();
+                
+                // additional "SUICIDE" on chest overlay for wrapping
+                ctx.font = "bold 15px monospace";
+                ctx.fillStyle = isAfterAct ? "#cf5a5a" : "#ab4a4a";
+                ctx.fillText("SUICIDE", bX, hY+85);
+                
                 ctx.restore();
             }
-        }
-        
-        // draw the weird guy with gun to head + SUICIDE words around body
-        function drawWeirdCharacter() {
-            const isDead = hasPerformedAction;
-            const headX = 400, headY = 170;
-            const bodyX = 400;
             
-            headBob = (Date.now() * 0.009) % (Math.PI * 2);
-            const bobOffset = isDead ? 2 : Math.sin(headBob) * 2;
-            
-            // draw SUICIDE word "around the body or the guy" in multiple places
-            ctx.save();
-            ctx.font = `bold ${isDead ? 22 : 19}px "Papyrus", "Courier New"`;
-            ctx.shadowBlur = 0;
-            
-            // rotating SUICIDE ring around torso
-            suicideRotationAngle += 0.02;
-            if (isDead) suicideRotationAngle += 0.09;
-            const angle = suicideRotationAngle;
-            const radius = 74;
-            const centerX = bodyX + 8, centerY = headY + 72;
-            const wordX = centerX + Math.cos(angle) * radius;
-            const wordY = centerY + Math.sin(angle) * radius * 0.75;
-            ctx.fillStyle = isDead ? "#ff88aa" : "#c44c77";
-            ctx.fillText("SUICIDE", wordX - 45, wordY);
-            
-            // more "SUICIDE" wrapping the body
-            ctx.font = "18px 'Comic Sans MS'";
-            ctx.fillStyle = "#c7557a";
-            ctx.fillText("SUICIDE", bodyX - 85, headY + 35);
-            ctx.fillStyle = "#dc7f9e";
-            ctx.fillText("SUICIDE", bodyX + 55, headY + 115);
-            ctx.font = "italic 20px fantasy";
-            ctx.fillStyle = "#aa4f6e";
-            ctx.fillText("SUICIDE", bodyX - 25, headY + 175);
-            if (!isDead) {
-                ctx.font = "bold 14px monospace";
-                ctx.fillStyle = "#ee99aa";
-                ctx.fillText("(suicide ballet)", bodyX + 20, headY + 205);
-            } else {
-                ctx.fillStyle = "#ff88bb";
-                ctx.font = "bold 24px 'Comic Sans'";
-                ctx.fillText("SUICIDE (finale)", bodyX - 70, headY + 245);
-            }
-            
-            // BODY: rubber hose / silly proportions
-            ctx.fillStyle = "#6b4e3a";
-            ctx.fillRect(bodyX-32, headY+80, 64, 108);
-            ctx.fillStyle = "#4d3527";
-            ctx.fillRect(bodyX-26, headY+184, 22, 62);
-            ctx.fillRect(bodyX+4, headY+184, 22, 62);
-            
-            // neck
-            ctx.fillStyle = "#c79a6e";
-            ctx.fillRect(headX-16, headY+24, 32, 20);
-            
-            // HEAD (oval weird)
-            ctx.beginPath();
-            ctx.ellipse(headX, headY + bobOffset*0.4, 34, 38, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#f7cf9f";
-            ctx.fill();
-            ctx.strokeStyle = "#8b5a2b";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // eyes: googly but weird
-            ctx.fillStyle = "#ffffff";
-            ctx.beginPath();
-            ctx.ellipse(headX-16, headY-4, 9, 13, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(headX+16, headY-4, 9, 13, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = "#010101";
-            ctx.beginPath();
-            ctx.arc(headX-16 + (Math.sin(Date.now()*0.02)*2.5), headY-2, 4.5, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(headX+16 + (Math.cos(Date.now()*0.023)*2.5), headY-2, 4.5, 0, Math.PI*2);
-            ctx.fill();
-            
-            // big goofy grin
-            ctx.beginPath();
-            ctx.arc(headX, headY+14, 20, 0.05, Math.PI - 0.05);
-            ctx.strokeStyle = "#672100";
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            if(!isDead){
-                ctx.fillStyle = "#ff6b6b";
-                ctx.beginPath();
-                ctx.ellipse(headX+6, headY+24, 7, 5, 0, 0, Math.PI*2);
-                ctx.fill();
-            } else {
-                // x_x deadpan funny
-                ctx.fillStyle = "#2f1e0c";
-                ctx.font = "28px monospace";
-                ctx.fillText("X", headX-24, headY+2);
-                ctx.fillText("X", headX+12, headY+2);
-            }
-            
-            // RIGHT ARM + GUN pointing at head (the 'gun to head' feature)
-            if(!isDead){
-                // noodle arm
-                ctx.beginPath();
-                ctx.moveTo(bodyX+34, headY+58);
-                ctx.quadraticCurveTo(bodyX+68, headY+32, bodyX+58, headY+2);
-                ctx.lineTo(bodyX+46, headY-2);
-                ctx.fillStyle = "#c28754";
-                ctx.fill();
-                // weird gun: distorted colorful shape
-                ctx.fillStyle = "#44aa77";
-                ctx.fillRect(bodyX+50, headY-8, 30, 14);
-                ctx.fillStyle = "#2e8b57";
-                ctx.fillRect(bodyX+72, headY-6, 18, 10);
-                ctx.fillStyle = "hotpink";
-                ctx.beginPath();
-                ctx.rect(bodyX+84, headY-12, 12, 20);
-                ctx.fill();
-                ctx.fillStyle = "#ffaa66";
-                ctx.font = "bold 11px monospace";
-                ctx.fillText("click", bodyX+68, headY-14);
-                // trigger finger
-                ctx.beginPath();
-                ctx.arc(bodyX+50, headY+0, 5.5, 0, Math.PI*2);
-                ctx.fillStyle = "#eeaa77";
-                ctx.fill();
-            } else {
-                // after self-shot: absurd confetti explosion + silly effects
-                ctx.fillStyle = "#ffaa66";
-                ctx.font = "bold 26px 'Comic Sans'";
-                ctx.fillText("BOINK CRACKLE", bodyX-50, headY+125);
-                ctx.fillStyle = "#ff44aa";
-                for(let i=0;i<22;i++){
-                    ctx.beginPath();
-                    ctx.arc(bodyX-25 + Math.random()*90, headY+35 + Math.random()*110, Math.random()*5+2, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = "#ffdd88";
-                ctx.font = "32px monospace";
-                ctx.fillText("~", bodyX-20, headY+80);
-                ctx.fillText("*", bodyX+35, headY+110);
-                // fallen gun on ground
-                ctx.fillStyle = "teal";
-                ctx.fillRect(bodyX+48, headY+155, 34, 12);
-                ctx.fillStyle = "cyan";
-                ctx.fillRect(bodyX+70, headY+149, 12, 18);
-            }
-            
-            // left arm: waving absurdly
-            ctx.beginPath();
-            ctx.moveTo(bodyX-34, headY+63);
-            ctx.lineTo(bodyX-70, headY+85);
-            ctx.lineTo(bodyX-48, headY+100);
-            ctx.fillStyle = "#b57a48";
-            ctx.fill();
-            if(!isDead){
-                ctx.fillStyle = "#ffaaaa";
-                ctx.font = "14px comic sans";
-                ctx.fillText("wave", bodyX-78, headY+80);
-            }
-            ctx.restore();
-        }
-        
-        // draw glitchy weird background patterns
-        function drawWeirdBackground() {
-            ctx.fillStyle = "#f7e9cf";
-            ctx.fillRect(0,0,W,H);
-            // squiggly lines
-            for(let i=0;i<40;i++){
-                ctx.beginPath();
-                ctx.moveTo(i*30, H-40);
-                ctx.lineTo(i*30+15, H-55 + Math.sin(Date.now()*0.003 + i)*12);
-                ctx.lineTo(i*30-10, H-70);
-                ctx.fillStyle = `rgba(200, 150, 200, 0.2)`;
-                ctx.fill();
-            }
-            ctx.fillStyle = "#ffcb8a";
-            ctx.font = "bold 22px 'Papyrus'";
-            ctx.fillText("WEIRD THEATRE", 25, 50);
-            ctx.font = "10px monospace";
-            ctx.fillStyle = "#b3776e";
-            ctx.fillText("no refunds for absurd endings", W-200, H-12);
-        }
-        
-        // THE BUTTON ACTION: "i dont care" -> person will 'shoot himself' in weird funny way
-        function performAbsurdSelfShot() {
-            if (hasPerformedAction) return;
-            hasPerformedAction = true;
-            meltdownTimer = 25;
-            
-            // stop spawning new DIE words
-            if (spawnInterval) clearInterval(spawnInterval);
-            spawnInterval = null;
-            
-            // make existing die words more chaotic
-            for(let i=0;i<dieWords.length;i++){
-                dieWords[i].wiggleSeed = Math.random() * 20;
-            }
-            
-            // button effect
-            const btn = document.getElementById("sillyTriggerBtn");
-            btn.innerText = "FATALITY (funny)";
-            btn.disabled = true;
-            btn.style.opacity = "0.7";
-            btn.style.filter = "grayscale(0.3)";
-            
-            const msgDiv = document.getElementById("weirdMessage");
-            msgDiv.innerHTML = "!!! THE WEIRD SHOT !!!";
-            
-            // small screen shake
-            let shakeCount = 0;
-            const shakeInt = setInterval(()=>{
-                if(shakeCount >= 4) clearInterval(shakeInt);
-                else {
-                    canvas.style.transform = `translate(${Math.random()*6-3}px, ${Math.random()*4-2}px)`;
-                    setTimeout(()=>{ canvas.style.transform = ""; }, 80);
-                    shakeCount++;
-                }
-            }, 100);
-        }
-        
-        // manage die words lifetime (auto remove old)
-        function manageDieWords() {
-            const now = Date.now();
-            for(let i=dieWords.length-1; i>=0; i--) {
-                if(now - dieWords[i].createdAt > 22000) {
-                    dieWords.splice(i,1);
+            // draw all "DIE" words with slight drift (only red or black)
+            function drawAllDieWords() {
+                for (let w of dieWords) {
+                    ctx.save();
+                    ctx.font = `900 ${w.size}px "Courier New", monospace`;
+                    ctx.shadowBlur = 3;
+                    ctx.shadowColor = "rgba(0,0,0,0.5)";
+                    let offsetX = 0, offsetY = 0;
+                    if (hasActed) {
+                        offsetX = (Math.sin(Date.now() * 0.022 + w.driftX * 10) * 3.2);
+                        offsetY = (Math.cos(Date.now() * 0.025 + w.driftY * 8) * 2.4);
+                    } else {
+                        offsetX = Math.sin(Date.now() * 0.006 + w.driftX * 4) * 1.2;
+                        offsetY = Math.cos(Date.now() * 0.008 + w.driftY * 4) * 1.0;
+                    }
+                    ctx.fillStyle = w.color;
+                    ctx.fillText("DIE", w.x + offsetX, w.y + offsetY);
+                    // small atmospheric cracks (optional)
+                    if(w.color === "#b12222") {
+                        ctx.fillStyle = "#8a2a2a";
+                        ctx.font = `${w.size-12}px monospace`;
+                        ctx.fillText("x", w.x + w.size*0.45, w.y-6);
+                    }
+                    ctx.restore();
                 }
             }
-            if(dieWords.length < 3 && !hasPerformedAction && spawnInterval) {
-                for(let i=0;i<2;i++) spawnDieWord();
-            }
-        }
-        
-        // ----- MAIN ANIMATION LOOP -----
-        function animate() {
-            if(!hasPerformedAction) {
-                manageDieWords();
-                if(dieWords.length < 2 && Math.random()<0.02 && spawnInterval) spawnDieWord();
-            }
             
-            drawWeirdBackground();
-            drawDieWords();
-            drawWeirdCharacter();
-            
-            // extra floating SUICIDE words that orbit around (reinforcing requirement)
-            ctx.save();
-            ctx.font = "bold 18px 'Courier New'";
-            ctx.fillStyle = hasPerformedAction ? "#ff9977" : "#bd6d8f";
-            const time = Date.now() * 0.005;
-            const orbitX = 400 + Math.sin(time)*55;
-            const orbitY = 220 + Math.cos(time*1.3)*35;
-            ctx.fillText("SUICIDE", orbitX-40, orbitY);
-            ctx.font = "italic 14px monospace";
-            ctx.fillStyle = "#aa5577";
-            ctx.fillText("(around body)", 325, 280);
-            ctx.restore();
-            
-            if(meltdownTimer > 0) {
-                meltdownTimer--;
-                // flashing effect on canvas border
-                ctx.strokeStyle = `rgba(255, 100, 150, ${Math.sin(Date.now()*0.03)*0.6+0.3})`;
-                ctx.lineWidth = 8;
-                ctx.strokeRect(5, 5, W-10, H-10);
+            // ---------- BACKGROUND: stark gradient / dark industrial ----------
+            function drawBackground() {
+                const grad = ctx.createLinearGradient(0, 0, 0, height);
+                grad.addColorStop(0, "#101218");
+                grad.addColorStop(1, "#191c24");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+                // subtle grain / texture
+                ctx.fillStyle = "rgba(0,0,0,0.08)";
+                for(let i=0;i<120;i++) {
+                    ctx.fillRect( (i*83)%width, (i*47)%height, 1.5, 1.5);
+                }
+                // faint atmosphere line
+                ctx.beginPath();
+                ctx.moveTo(0, height*0.7);
+                ctx.lineTo(width, height*0.65);
+                ctx.strokeStyle = "#302a2a";
+                ctx.lineWidth = 1;
+                ctx.stroke();
             }
             
-            requestAnimationFrame(animate);
-        }
-        
-        // initialize everything
-        function init() {
-            startDieSpawning();
-            // attach button event
-            const actionBtn = document.getElementById("sillyTriggerBtn");
-            actionBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                performAbsurdSelfShot();
+            // ---------- THE FATAL ACT (person shoots himself) ----------
+            function executeFinalAct() {
+                if (hasActed) return;
+                hasActed = true;
+                actTimer = 45;
+                
+                // stop spawning additional DIE words
+                if (spawnInterval) {
+                    clearInterval(spawnInterval);
+                    spawnInterval = null;
+                }
+                
+                // add a subtle full-screen shudder for 2 frames
+                let shakeFrames = 0;
+                function screenShake() {
+                    if(shakeFrames < 6) {
+                        canvas.style.transform = `translate(${Math.random()*4-2}px, ${Math.random()*3-1.5}px)`;
+                        setTimeout(() => { canvas.style.transform = ""; }, 50);
+                        shakeFrames++;
+                        requestAnimationFrame(() => setTimeout(screenShake, 35));
+                    }
+                }
+                screenShake();
+                
+                // change button text to irreversible state
+                const btn = document.getElementById('finalActBtn');
+                if(btn) {
+                    btn.innerText = "silenced";
+                    btn.disabled = true;
+                    btn.style.opacity = "0.5";
+                    btn.style.cursor = "default";
+                }
+            }
+            
+            // ---------- ANIMATION LOOP (fullscreen, no UI panels) ----------
+            let redrawImmediate = true;
+            
+            function animateScene() {
+                if (!ctx) return;
+                if (width === 0 || height === 0) {
+                    resizeCanvas();
+                    return;
+                }
+                
+                // update positions based on current canvas size
+                updateCharacterPositions();
+                
+                // culling and optional respawn (if not acted)
+                if (!hasActed) {
+                    cullDieWords();
+                    // if dieWords become too few, respawn elegantly
+                    if (dieWords.length < 5 && spawnInterval) {
+                        for(let i=0;i<2;i++) spawnDieWord();
+                    }
+                } else {
+                    if (actTimer > 0) actTimer--;
+                }
+                
+                // draw everything
+                drawBackground();
+                drawAllDieWords();
+                drawFigureAndGun();
+                
+                // final overlay words if acted (but no silly banners, just text floating)
+                if (hasActed) {
+                    ctx.font = "italic 16px 'Courier New'";
+                    ctx.fillStyle = "#a54e4e";
+                    ctx.shadowBlur = 0;
+                    ctx.fillText("SILENCE", character.headX-45, character.headY+155);
+                    ctx.fillStyle = "#692c2c";
+                    ctx.font = "bold 13px monospace";
+                    ctx.fillText("SHOT", character.gunMuzzleX-32, character.gunMuzzleY+28);
+                }
+                
+                // minimalistic no borders, no panels, no extra decorations
+                requestAnimationFrame(animateScene);
+            }
+            
+            // ---------- SETUP: RESPAWN HANDLING & BUTTON ----------
+            function setup() {
+                resizeCanvas();
+                startDieSpawner();
+                // add one or two initial words
+                for(let i=0;i<5;i++) spawnDieWord();
+                
+                const actionButton = document.getElementById('finalActBtn');
+                if (actionButton) {
+                    actionButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        executeFinalAct();
+                    });
+                }
+                
+                animateScene();
+            }
+            
+            // run setup
+            setup();
+            
+            // ensure canvas resize on orientation changes
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                updateCharacterPositions();
             });
-            animate();
-        }
-        
-        init();
-    })();
-</script>
+        })();
+    </script>
 </body>
 </html>
