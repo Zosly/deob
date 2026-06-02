@@ -1,1 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Trigger Warning: Interactive Narrative Scene</title>
+    <style>
+        * {
+            user-select: none; /* prevent accidental text selection on buttons */
+        }
+        body {
+            background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Courier New', monospace, system-ui;
+            margin: 0;
+            padding: 20px;
+        }
 
+        /* main container */
+        .scene-container {
+            background: #2c2e3a;
+            border-radius: 64px;
+            padding: 20px 30px 30px 30px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 32px;
+            box-shadow: 0 12px 28px black;
+            cursor: crosshair;
+            background-color: #e9e6db;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #2e1e1a;
+            border: none;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            padding: 12px 28px;
+            border-radius: 60px;
+            color: #ffcf9a;
+            text-shadow: 0 2px 0 #4a1a0a;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 #4a2a1a;
+            background: radial-gradient(circle at 30% 20%, #5c2e1e, #2e1a10);
+        }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #4a2a1a;
+        }
+        .die-stats {
+            background: #1e1f28cc;
+            backdrop-filter: blur(6px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #f0e6c5;
+            border: 1px solid rgba(255,200,100,0.5);
+        }
+        .warning {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 14px;
+            color: #ddbba0;
+            background: #221c16a0;
+            border-radius: 40px;
+            padding: 5px 12px;
+            display: inline-block;
+            width: auto;
+        }
+        footer {
+            display: flex;
+            justify-content: center;
+        }
+        @keyframes pulseRed {
+            0% { text-shadow: 0 0 0px red; }
+            100% { text-shadow: 0 0 12px #ff5555; }
+        }
+        .sad-effect {
+            transition: all 0.1s;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="scene-container">
+        <canvas id="gameCanvas" width="800" height="500" style="width:800px;height:500px"></canvas>
+        <div class="info-panel">
+            <div class="die-stats" id="dieMessageBoard">⚫ DIE appears in shadows ⚪</div>
+            <button id="tragedyBtn">💀 I DON'T CARE 💀</button>
+        </div>
+        <div class="warning">
+            ⚠️ sensitive interactive scene — fictional dramatic representation
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ----- CANVAS SETUP -----
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // dimensions
+        const W = 800, H = 500;
+        
+        // ----- FIGURE & GUN CONFIGURATION -----
+        // The "body" that points gun on his head. We'll draw a human silhouette (trenchcoat style)
+        // with arm raising a pistol to the temple.
+        // Coordinates (relative to canvas)
+        const bodyCenterX = 400;    // torso center
+        const headX = 400;
+        const headY = 190;          // head center Y
+        const gunMuzzleX = 435;     // tip of gun near right temple
+        const gunMuzzleY = 180;
+        
+        // dynamic flag for "shot himself" state
+        let hasShot = false;
+        let bloodSplatter = null;    // store blood particles or simply extra effect
+        
+        // animation for shot (temporary red flash + pose change)
+        let shotAnimationTimer = 0;   // >0 means recent shot
+        
+        // ----- "Die" word floating elements (random positions, random color only red or black) -----
+        let dieWords = [];    // each element: { x, y, color, life, size }
+        const MAX_DIE_WORDS = 12;
+        let dieSpawnInterval = null;
+        
+        // also show "SUICIDE" word wrapped around the body / guy (appears near torso/head)
+        // we'll draw "SUICIDE" text in a distressed style, placed on his chest and wrapping near arm.
+        // I'll make two instances: one over chest, another floating near shoulder to emphasize "around the body"
+        // according to requirement: "Suicide word and a body that point his gun on his head and dont forge to put the Suicide word around the body or the guy"
+        
+        // we'll draw additional 'SUICIDE' decorative text near left arm, right arm wrapping.
+        
+        // ---- helper: random integer ----
+        function rand(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // spawn a new "Die" word at random place with random color (red or black)
+        function spawnDieWord() {
+            if (dieWords.length >= MAX_DIE_WORDS + 2) {
+                // remove oldest if too many
+                dieWords.shift();
+            }
+            const randomX = rand(40, W - 60);
+            const randomY = rand(40, H - 80);
+            // color only red (#c22) or black (#1e1a1a)
+            const colorChoice = Math.random() < 0.5 ? "#c22a2a" : "#1a1a1a";
+            dieWords.push({
+                x: randomX,
+                y: randomY,
+                color: colorChoice,
+                life: 1.0,       // full opacity
+                size: rand(20, 36),
+                createdAt: Date.now()
+            });
+            // update board message for fun
+            const msgDiv = document.getElementById("dieMessageBoard");
+            msgDiv.innerHTML = `⚫🔴 "DIE" appears — ${dieWords.length} words wandering ⚫🔴`;
+            setTimeout(()=>{
+                if(msgDiv && !hasShot) msgDiv.innerHTML = `⚫ DIE appears in shadows ⚪`;
+                else if(hasShot) msgDiv.innerHTML = `💢 SILENCE 💢`;
+            }, 1800);
+        }
+        
+        // periodic spawn (random interval)
+        function startDieSpawning() {
+            if(dieSpawnInterval) clearInterval(dieSpawnInterval);
+            dieSpawnInterval = setInterval(() => {
+                if(!hasShot) {
+                    spawnDieWord();
+                    // occasionally spawn another one for density
+                    if(Math.random()<0.4 && dieWords.length < MAX_DIE_WORDS) spawnDieWord();
+                }
+            }, 2200);
+            // initial 3 words
+            for(let i=0;i<3;i++) setTimeout(()=>spawnDieWord(), i*400);
+        }
+        
+        // ----- RENDER THE CHARACTER (man pointing gun to his head) + Suicide wording around body-----
+        function drawGuyAndGun() {
+            // If shot animation active -> draw slumped / blood / different pose
+            const isShotActive = hasShot || shotAnimationTimer > 0;
+            
+            // draw "SUICIDE" text around body first (so it wraps behind/front but we make it vibrant)
+            // requirement: put Suicide word around the body or the guy
+            // We'll draw multiple "SUICIDE" word occurrences: 
+            // - near left arm (curved)
+            // - wrapping over chest
+            // - near right shoulder/gun arm (but not overlapping gun)
+            // also one stitched text.
+            ctx.save();
+            if(!isShotActive) {
+                // normal eerie style
+                ctx.font = "bold 18px 'Courier New', monospace";
+                ctx.shadowBlur = 0;
+                // text around left shoulder area (left side of torso)
+                ctx.fillStyle = "#4a2a2a";
+                ctx.font = "800 20px monospace";
+                ctx.fillText("SUICIDE", bodyCenterX-95, headY+25);
+                ctx.font = "bold 17px monospace";
+                ctx.fillStyle = "#8b3c3c";
+                ctx.fillText("SUICIDE", bodyCenterX+30, headY+70);
+                ctx.font = "italic 16px monospace";
+                ctx.fillStyle = "#611f1f";
+                ctx.fillText("SUICIDE", bodyCenterX-55, headY+115);
+                // wrapped phrase near belt
+                ctx.font = "900 19px 'Segoe UI'";
+                ctx.fillStyle = "#b34e4e";
+                ctx.fillText("⌇SUICIDE⌇", bodyCenterX-15, headY+150);
+                // additional around the gun arm region
+                ctx.font = "bold 16px monospace";
+                ctx.fillStyle = "#8f3a3a";
+                ctx.fillText("✹ SUICIDE ✹", bodyCenterX+50, headY+30);
+                // on the right side of head (floating)
+                ctx.fillStyle = "#a04040";
+                ctx.fillText("S UICIDE", headX+65, headY-10);
+            } else {
+                // after shot - ghostly suicide words drift / distorted
+                ctx.font = "bold 20px 'Courier New'";
+                ctx.fillStyle = "#9a2e2e";
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = "darkred";
+                ctx.fillText("✝ SUICIDE ✝", bodyCenterX-50, headY+80);
+                ctx.fillStyle = "#cc5555";
+                ctx.fillText("SUICIDE", headX+40, headY+40);
+                ctx.fillText("SUICIDE", bodyCenterX-70, headY+130);
+                ctx.font = "bold 14px monospace";
+                ctx.fillStyle = "#ff7a7a";
+                ctx.fillText("perpetual", bodyCenterX+15, headY+175);
+            }
+            
+            // ---- DRAW THE BODY (human figure with raised arm/gun to head) ----
+            // if not shot: arm up, gun pressed against head
+            // if shot: body collapses, gun drops or blood, head wound.
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = "transparent";
+            
+            // Body (torso)
+            ctx.beginPath();
+            if(!isShotActive) {
+                // standing figure
+                ctx.fillStyle = "#2c2b2a";
+                ctx.shadowBlur = 2;
+                ctx.fillRect(bodyCenterX-40, headY+40, 80, 130);
+                // legs
+                ctx.fillStyle = "#1f1e1c";
+                ctx.fillRect(bodyCenterX-32, headY+165, 25, 70);
+                ctx.fillRect(bodyCenterX+7, headY+165, 25, 70);
+                // neck
+                ctx.fillStyle = "#413e3a";
+                ctx.fillRect(headX-15, headY+28, 30, 20);
+                // head (circle)
+                ctx.beginPath();
+                ctx.arc(headX, headY, 28, 0, Math.PI*2);
+                ctx.fillStyle = "#e0bba0";
+                ctx.fill();
+                ctx.strokeStyle = "#4a2e22";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                // face details - grim expression 
+                ctx.fillStyle = "#26211c";
+                ctx.beginPath();
+                ctx.arc(headX-12, headY-5, 4, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(headX+12, headY-5, 4, 0, Math.PI*2);
+                ctx.fill();
+                // frown
+                ctx.beginPath();
+                ctx.arc(headX, headY+12, 12, 0.05, Math.PI - 0.05);
+                ctx.strokeStyle = "#3a221a";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // RIGHT ARM (holding gun) pointing at head
+                ctx.beginPath();
+                ctx.moveTo(bodyCenterX+30, headY+55);
+                ctx.lineTo(bodyCenterX+55, headY+30);
+                ctx.lineTo(gunMuzzleX-8, gunMuzzleY-5);
+                ctx.fillStyle = "#3e3a35";
+                ctx.fill();
+                // forearm
+                ctx.beginPath();
+                ctx.moveTo(bodyCenterX+45, headY+40);
+                ctx.lineTo(gunMuzzleX-2, gunMuzzleY-2);
+                ctx.lineTo(gunMuzzleX-15, gunMuzzleY+6);
+                ctx.fill();
+                // DRAW GUN (pistol shape)
+                ctx.fillStyle = "#2f2b27";
+                ctx.beginPath();
+                ctx.rect(gunMuzzleX-18, gunMuzzleY-6, 28, 12);
+                ctx.fill();
+                ctx.fillStyle = "#51504b";
+                ctx.beginPath();
+                ctx.rect(gunMuzzleX-5, gunMuzzleY-9, 12, 18);
+                ctx.fill();
+                // gun barrel (towards temple)
+                ctx.fillStyle = "#2a221d";
+                ctx.fillRect(gunMuzzleX-2, gunMuzzleY-3, 20, 6);
+                // finger
+                ctx.beginPath();
+                ctx.arc(gunMuzzleX-13, gunMuzzleY+2, 4, 0, Math.PI*2);
+                ctx.fillStyle = "#dbb48b";
+                ctx.fill();
+                
+                // left arm (idle)
+                ctx.beginPath();
+                ctx.moveTo(bodyCenterX-40, headY+60);
+                ctx.lineTo(bodyCenterX-70, headY+95);
+                ctx.lineTo(bodyCenterX-45, headY+105);
+                ctx.fillStyle = "#37342e";
+                ctx.fill();
+            } 
+            else {
+                // SHOT VERSION: body slumped, blood, gun dropped, bullet wound
+                ctx.fillStyle = "#2b2823";
+                ctx.fillRect(bodyCenterX-42, headY+45, 84, 120);
+                ctx.fillStyle = "#1a1714";
+                ctx.fillRect(bodyCenterX-34, headY+160, 28, 60);
+                ctx.fillRect(bodyCenterX+8, headY+160, 26, 60);
+                // head tilted & bleeding
+                ctx.save();
+                ctx.translate(headX+5, headY+10);
+                ctx.rotate(0.4);
+                ctx.beginPath();
+                ctx.arc(0, 0, 28, 0, Math.PI*2);
+                ctx.fillStyle = "#c9aa8b";
+                ctx.fill();
+                ctx.fillStyle = "#8a2a2a";
+                ctx.beginPath();
+                ctx.ellipse(12, -12, 12, 8, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = "#b71c1c";
+                ctx.beginPath();
+                ctx.arc(18, -18, 8, 0, Math.PI*2);
+                ctx.fill();
+                // blood streaks
+                ctx.restore();
+                // Gun on ground
+                ctx.fillStyle = "#3c3530";
+                ctx.fillRect(bodyCenterX+20, headY+175, 38, 10);
+                ctx.fillRect(bodyCenterX+35, headY+168, 12, 18);
+                // blood pool
+                ctx.fillStyle = "#9e2a2a";
+                ctx.beginPath();
+                ctx.ellipse(headX+5, headY+45, 32, 18, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = "#cd5c5c";
+                ctx.font = "bold 22px monospace";
+                ctx.fillText("💀", headX-5, headY-2);
+                // extra red mess
+                for(let i=0;i<12;i++) {
+                    ctx.fillStyle = `rgba(180, 30, 30, ${Math.random() * 0.7})`;
+                    ctx.beginPath();
+                    ctx.arc(headX+ (Math.random()*30-15), headY+ (Math.random()*30), Math.random()*5+2, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            }
+            
+            // if shotAnimationTimer active but hasShot true we still draw blood mist
+            if(shotAnimationTimer > 0 && !hasShot) {
+                // transitional flash effect but not needed extra; we manage by hasShot state
+            }
+            
+            // OVERLAY (for both) we want the Suicide word present also in the after death
+            if(hasShot) {
+                ctx.font = "italic 20px 'Courier New'";
+                ctx.fillStyle = "#ff6666cc";
+                ctx.fillText("suicide...", headX-40, headY+70);
+                ctx.fillStyle = "#bc4a4a";
+                ctx.fillText("SILENCED", bodyCenterX-30, headY+210);
+            }
+        }
+        
+        // draw all "Die" words at random positions / only red and black
+        function drawDieWords() {
+            for(let i=0; i<dieWords.length; i++) {
+                const w = dieWords[i];
+                // slowly fade? not required but cool, but we keep constant opacity with possible pulsation
+                ctx.font = `900 ${w.size}px "Impact", "Courier New", monospace`;
+                ctx.shadowBlur = 2;
+                ctx.shadowColor = "black";
+                ctx.fillStyle = w.color;
+                ctx.fillText("DIE", w.x, w.y);
+                // add slight rotation optional: not needed but style
+                if(w.color === "#c22a2a") {
+                    ctx.fillStyle = "#ff4d4d";
+                    ctx.font = `bold ${w.size-4}px monospace`;
+                    ctx.fillText("!", w.x+ w.size*0.5, w.y-6);
+                }
+            }
+            ctx.shadowBlur = 0;
+        }
+        
+        // update die words (some gentle life effect maybe remove after duration but we preserve)
+        // but for cleanliness: remove very old words? but requirement just random position persists, they can accumulate, but we have max 14 remove old
+        function manageDieWordsLifetime() {
+            const now = Date.now();
+            for(let i=dieWords.length-1; i>=0; i--) {
+                // remove after 25 seconds for a dynamic refresh (keeps random words)
+                if(now - dieWords[i].createdAt > 25000) {
+                    dieWords.splice(i,1);
+                }
+            }
+            // maintain minimum count 3
+            if(dieWords.length < 3 && !hasShot) {
+                for(let i=0;i<2;i++) spawnDieWord();
+            }
+        }
+        
+        // handle button press – the person will shoot himself
+        function performShoot() {
+            if(hasShot) return; // already dead
+            
+            hasShot = true;
+            shotAnimationTimer = 15; // just for frames, but we keep the state true
+            
+            // remove all "Die" words on death? requirement not explicit but adds finality
+            dieWords.length = 0;
+            // also stop spawning new Die words
+            if(dieSpawnInterval) {
+                clearInterval(dieSpawnInterval);
+                dieSpawnInterval = null;
+            }
+            // add a short red screen flash effect
+            let flashCount = 0;
+            const flashInterval = setInterval(()=>{
+                if(flashCount>=3) clearInterval(flashInterval);
+                else {
+                    document.body.style.transition = "background 0.07s";
+                    document.body.style.backgroundColor = "#8a1a1a";
+                    setTimeout(()=>{ document.body.style.backgroundColor = ""; }, 100);
+                    flashCount++;
+                }
+            }, 120);
+            
+            // update button text
+            const btn = document.getElementById("tragedyBtn");
+            btn.innerText = "🔫 SHOT 🔫";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+            btn.style.cursor = "default";
+            
+            const msgDiv = document.getElementById("dieMessageBoard");
+            msgDiv.innerHTML = "💢 FATAL TRIGGER 💢";
+            // additional redraw for dramatic effect
+        }
+        
+        // ----- ANIMATION LOOP (continuous draw) -----
+        function animateAndDraw() {
+            if(!hasShot) {
+                manageDieWordsLifetime();
+                // occasionally respawn if not shot
+                if(dieWords.length < 4 && Math.random()<0.02) spawnDieWord();
+            }
+            // clear canvas
+            ctx.clearRect(0, 0, W, H);
+            // background gritty floor
+            ctx.fillStyle = "#cfc6b2";
+            ctx.fillRect(0,0,W,H);
+            // floor shadow
+            ctx.fillStyle = "#968b78";
+            ctx.fillRect(0, H-70, W, 70);
+            ctx.fillStyle = "#7f6e58";
+            for(let i=0;i<60;i++) {
+                ctx.fillRect(20+i*15, H-68, 8, 12);
+            }
+            
+            // draw all die words (behind guy? we draw before guy but requirement just random place)
+            drawDieWords();
+            
+            // draw main character + gun + suicide words around body
+            drawGuyAndGun();
+            
+            // additional Suicide word emphasis around the body again (ensuring it wraps)
+            ctx.font = "bold 16px 'Courier New'";
+            ctx.fillStyle = "#913e3e";
+            ctx.fillText("⚔️ SUICIDE ⚔️", bodyCenterX-30, headY+180);
+            if(!hasShot) {
+                ctx.font = "italic 14px monospace";
+                ctx.fillStyle = "#601010";
+                ctx.fillText("〔 SUICIDE 〕", headX-55, headY+95);
+                ctx.fillStyle = "#bd5a5a";
+                ctx.fillText("SUICIDE", gunMuzzleX-35, gunMuzzleY-18);
+            } else {
+                ctx.fillStyle = "#eb7a7a";
+                ctx.font = "bold 18px monospace";
+                ctx.fillText("S U I C I D E", bodyCenterX-70, headY+50);
+                ctx.fillText("SUICIDE", headX-85, headY+30);
+            }
+            
+            // if shot timer additional effect
+            if(shotAnimationTimer>0) {
+                shotAnimationTimer--;
+            }
+            
+            requestAnimationFrame(animateAndDraw);
+        }
+        
+        // ---- initialization and button event ----
+        function init() {
+            startDieSpawning();
+            // initial three die words
+            for(let i=0;i<4;i++) spawnDieWord();
+            // attach button event
+            const shootBtn = document.getElementById("tragedyBtn");
+            shootBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                performShoot();
+            });
+            // start drawing loop
+            animateAndDraw();
+        }
+        
+        // also add reset feeling? not required but we keep as single experience
+        init();
+    })();
+</script>
+</body>
+</html>
