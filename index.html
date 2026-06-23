@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeAreDevs · Ultimate Script Deobfuscator</title>
+    <title>WeAreDevs · Script Deobfuscator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -15,19 +15,17 @@
             --secondary: #00cec9;
             --accent: #fd79a8;
             --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
             --bg-card: rgba(20, 20, 30, 0.85);
             --text-primary: #e8e8f0;
             --text-secondary: #a0a0b8;
             --border-color: rgba(108, 92, 231, 0.2);
             --glow-primary: 0 0 30px rgba(108, 92, 231, 0.3);
-            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg-primary);
             min-height: 100vh;
             display: flex;
@@ -35,8 +33,6 @@
             justify-content: center;
             padding: 20px;
             color: var(--text-primary);
-            position: relative;
-            overflow-x: hidden;
         }
 
         body::before {
@@ -48,42 +44,8 @@
             bottom: 0;
             background: 
                 radial-gradient(circle at 20% 50%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 206, 201, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(253, 121, 168, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, rgba(0, 206, 201, 0.06) 0%, transparent 50%);
             z-index: 0;
-            animation: bgPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes bgPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: floatParticle linear infinite;
-        }
-
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
 
         .deobfuscator-card {
@@ -92,57 +54,37 @@
             max-width: 1200px;
             width: 100%;
             background: var(--bg-card);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(20px);
             border-radius: 32px;
-            padding: 45px 50px;
-            box-shadow: var(--shadow-card), var(--glow-primary);
+            padding: 40px 45px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), var(--glow-primary);
             border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            animation: cardFadeIn 0.8s ease-out;
-        }
-
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .deobfuscator-card:hover {
-            box-shadow: var(--shadow-card), var(--glow-primary), 0 0 60px rgba(108, 92, 231, 0.15);
-            border-color: rgba(108, 92, 231, 0.4);
         }
 
         .header {
             display: flex;
             align-items: center;
             gap: 20px;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
         .header-icon {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            width: 64px;
-            height: 64px;
-            border-radius: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 28px;
             color: white;
             box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
-            animation: iconPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .header h1 {
-            font-weight: 900;
-            font-size: 32px;
-            letter-spacing: -1px;
+            font-weight: 800;
+            font-size: 28px;
             background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 50%, var(--primary) 100%);
             -webkit-background-clip: text;
             background-clip: text;
@@ -150,42 +92,26 @@
             margin-right: auto;
         }
 
-        .header h1 span {
-            background: linear-gradient(135deg, var(--accent), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
         .badge {
             background: rgba(108, 92, 231, 0.15);
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 60px;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 600;
             color: var(--secondary);
             border: 1px solid rgba(0, 206, 201, 0.2);
             display: flex;
             align-items: center;
-            gap: 10px;
-            backdrop-filter: blur(4px);
-            animation: badgeGlow 2s ease-in-out infinite;
+            gap: 8px;
         }
-
-        @keyframes badgeGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 206, 201, 0.1); }
-            50% { box-shadow: 0 0 40px rgba(0, 206, 201, 0.2); }
-        }
-
-        .badge i { color: var(--secondary); font-size: 14px; }
 
         .stats-bar {
             display: flex;
-            gap: 30px;
-            padding: 15px 20px;
+            gap: 25px;
+            padding: 12px 18px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            margin-bottom: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             flex-wrap: wrap;
         }
@@ -193,102 +119,59 @@
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 13px;
+            gap: 8px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        .stat-item i { color: var(--primary); font-size: 16px; }
-        .stat-item .value { color: var(--text-primary); font-weight: 700; font-size: 15px; }
-
-        .input-area { margin-bottom: 25px; }
-
-        .input-area label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            letter-spacing: 0.3px;
-        }
-
-        .input-area label i { color: var(--primary); font-size: 18px; }
+        .stat-item i { color: var(--primary); font-size: 14px; }
+        .stat-item .value { color: var(--text-primary); font-weight: 600; }
 
         textarea {
             width: 100%;
-            min-height: 220px;
+            min-height: 200px;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 16px;
-            padding: 20px 24px;
+            padding: 18px 22px;
             font-family: 'Inter', 'Fira Code', monospace;
             font-size: 13px;
-            line-height: 1.7;
+            line-height: 1.6;
             color: var(--text-primary);
             resize: vertical;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.4);
-            letter-spacing: 0.2px;
         }
 
         textarea:focus {
             outline: none;
             border-color: var(--primary);
             background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1), inset 0 4px 20px rgba(0, 0, 0, 0.6);
-        }
-
-        textarea::placeholder {
-            color: rgba(160, 160, 184, 0.4);
-            font-weight: 400;
         }
 
         .action-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 16px;
-            margin-top: 20px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-top: 18px;
+            margin-bottom: 20px;
         }
-
-        .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
 
         .btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px 28px;
-            font-weight: 700;
-            font-size: 14px;
+            border-radius: 10px;
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 13px;
             color: var(--text-primary);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s;
         }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before { left: 100%; }
-
-        .btn i { font-size: 16px; transition: all 0.3s; }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -297,57 +180,26 @@
             box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
         }
 
-        .btn-primary i { color: white; }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(108, 92, 231, 0.5);
-            border-color: var(--secondary);
-        }
-
-        .btn-primary:active { transform: translateY(0); }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.08);
         }
 
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: rgba(253, 121, 168, 0.1);
-            border-color: rgba(253, 121, 168, 0.2);
-            color: var(--accent);
-        }
-
-        .btn-danger:hover {
-            background: rgba(253, 121, 168, 0.2);
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .status-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-left: auto;
         }
 
         .status-badge {
             background: rgba(255, 255, 255, 0.05);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 60px;
             font-size: 12px;
-            font-weight: 600;
             color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin-left: auto;
         }
 
         .status-badge .dot {
@@ -355,15 +207,14 @@
             height: 8px;
             border-radius: 50%;
             display: inline-block;
-            animation: dotPulse 2s ease-in-out infinite;
         }
 
         .status-badge .dot.ready { background: var(--secondary); }
-        .status-badge .dot.processing { background: var(--primary); animation: dotPulse 0.5s ease-in-out infinite; }
+        .status-badge .dot.processing { background: var(--primary); animation: pulse 0.5s infinite; }
         .status-badge .dot.done { background: #00b894; }
         .status-badge .dot.error { background: var(--accent); }
 
-        @keyframes dotPulse {
+        @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(0.8); }
         }
@@ -373,34 +224,33 @@
             border-radius: 16px;
             padding: 4px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .output-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 20px 10px 20px;
+            padding: 12px 18px 8px 18px;
             flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .output-header span {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
 
-        .output-header span i { color: var(--primary); font-size: 16px; }
+        .output-header span {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        .output-actions { display: flex; gap: 10px; }
+        .output-header span i { color: var(--primary); }
+
+        .output-actions { display: flex; gap: 8px; }
 
         .output-actions .btn-sm {
-            padding: 6px 16px;
-            font-size: 12px;
+            padding: 4px 14px;
+            font-size: 11px;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -409,69 +259,52 @@
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .output-actions .btn-sm:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.15);
             color: var(--text-primary);
         }
 
         #outputBox {
             width: 100%;
-            min-height: 200px;
+            min-height: 180px;
             background: rgba(0, 0, 0, 0.5);
             border: none;
             border-radius: 12px;
-            padding: 20px 24px;
+            padding: 18px 22px;
             font-family: 'Inter', 'Fira Code', monospace;
             font-size: 13px;
-            line-height: 1.8;
+            line-height: 1.7;
             color: var(--text-primary);
             resize: vertical;
-            transition: all 0.3s;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.1px;
         }
 
-        #outputBox:focus {
-            outline: none;
-            background: rgba(0, 0, 0, 0.7);
-        }
+        #outputBox:focus { outline: none; background: rgba(0, 0, 0, 0.7); }
 
         .footer {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 20px;
+            padding-top: 16px;
         }
 
-        .footer .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
+        .footer .footer-left { display: flex; align-items: center; gap: 16px; }
         .footer .footer-left i { color: var(--primary); margin-right: 4px; }
-
-        .footer .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .footer .footer-right { display: flex; align-items: center; gap: 12px; }
 
         .footer .footer-right .tech-badge {
             background: rgba(255, 255, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 10px;
             color: var(--text-secondary);
         }
 
@@ -482,47 +315,30 @@
             transform: translateX(-50%) translateY(100px);
             background: rgba(0, 0, 0, 0.9);
             color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-card);
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s;
             z-index: 1000;
-            backdrop-filter: blur(10px);
             pointer-events: none;
         }
 
-        .tooltip.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .tooltip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         @media (max-width: 768px) {
-            .deobfuscator-card { padding: 25px 20px; border-radius: 24px; }
-            .header h1 { font-size: 24px; }
-            .header-icon { width: 50px; height: 50px; font-size: 24px; }
-            .stats-bar { gap: 15px; padding: 12px 16px; }
-            .stat-item { font-size: 12px; }
-            .action-bar { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: stretch; }
-            .btn { flex: 1; justify-content: center; padding: 10px 20px; }
-            .status-container { margin-left: 0; justify-content: center; }
-            textarea, #outputBox { min-height: 150px; font-size: 12px; padding: 16px 18px; }
-            .footer { flex-direction: column; align-items: center; text-align: center; }
-            .footer .footer-left { flex-wrap: wrap; justify-content: center; }
-        }
-
-        @media (max-width: 480px) {
-            .deobfuscator-card { padding: 20px 15px; }
+            .deobfuscator-card { padding: 20px; }
             .header h1 { font-size: 20px; }
-            .badge { font-size: 11px; padding: 6px 14px; }
-            .stats-bar { flex-direction: column; gap: 8px; }
+            .stats-bar { gap: 12px; padding: 10px 14px; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            .btn { justify-content: center; }
+            .status-badge { margin-left: 0; justify-content: center; }
+            textarea, #outputBox { min-height: 120px; font-size: 12px; padding: 14px 16px; }
+            .footer { flex-direction: column; align-items: center; text-align: center; }
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
@@ -530,68 +346,54 @@
 </head>
 <body>
 
-    <div class="particles" id="particles"></div>
     <div class="tooltip" id="tooltip"></div>
 
     <div class="deobfuscator-card">
         <div class="header">
             <div class="header-icon"><i class="fas fa-skull"></i></div>
             <h1>WeAreDevs <span>Deobfuscator</span></h1>
-            <div class="badge"><i class="fas fa-bolt"></i> v3.0 · Ultimate</div>
+            <div class="badge"><i class="fas fa-bolt"></i> v4.0</div>
         </div>
 
         <div class="stats-bar">
-            <div class="stat-item"><i class="fas fa-shield-halved"></i> Security: <span class="value">Maximum</span></div>
-            <div class="stat-item"><i class="fas fa-microchip"></i> Engine: <span class="value">WeAreDevs v2.0</span></div>
+            <div class="stat-item"><i class="fas fa-microchip"></i> Engine: <span class="value">Advanced</span></div>
             <div class="stat-item"><i class="fas fa-bolt"></i> Status: <span class="value" id="engineStatus">Ready</span></div>
             <div class="stat-item"><i class="fas fa-code"></i> Processed: <span class="value" id="processedCount">0</span></div>
         </div>
 
         <div class="input-area">
-            <label><i class="fas fa-terminal"></i> Obfuscated Script Input</label>
-            <textarea id="inputScript" placeholder="// Paste your WeAreDevs obfuscated script here...&#10;// Supports string.char, base64, loadstring, and more"></textarea>
+            <textarea id="inputScript" placeholder="// Paste your WeAreDevs obfuscated script here..."></textarea>
         </div>
 
         <div class="action-bar">
-            <div class="btn-group">
-                <button class="btn btn-primary" id="deobfuscateBtn"><i class="fas fa-wand-magic-sparkles"></i> Deobfuscate</button>
-                <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-eraser"></i> Clear</button>
-                <button class="btn btn-secondary" id="sampleBtn"><i class="fas fa-file-lines"></i> Load Sample</button>
-                <button class="btn btn-danger" id="resetBtn"><i class="fas fa-rotate"></i> Reset</button>
-            </div>
-            <div class="status-container">
-                <div class="status-badge">
-                    <span class="dot ready" id="statusDot"></span>
-                    <span id="statusText">Ready</span>
-                </div>
+            <button class="btn btn-primary" id="deobfuscateBtn"><i class="fas fa-wand-magic-sparkles"></i> Deobfuscate</button>
+            <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-eraser"></i> Clear</button>
+            <button class="btn btn-secondary" id="sampleBtn"><i class="fas fa-file-lines"></i> Sample</button>
+            <div class="status-badge">
+                <span class="dot ready" id="statusDot"></span>
+                <span id="statusText">Ready</span>
             </div>
         </div>
 
         <div class="output-area">
             <div class="output-header">
-                <span>
-                    <i class="fas fa-arrow-right"></i>
-                    Deobfuscated Output
-                    <span style="font-weight:400;font-size:11px;color:var(--text-secondary);margin-left:8px;">
-                        (Ctrl+Enter to run)
-                    </span>
-                </span>
+                <span><i class="fas fa-arrow-right"></i> Deobfuscated Output <span style="font-weight:400;font-size:10px;color:var(--text-secondary);">(Ctrl+Enter)</span></span>
                 <div class="output-actions">
                     <button class="btn-sm" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
-                    <button class="btn-sm" id="selectBtn"><i class="fas fa-select-all"></i> Select All</button>
+                    <button class="btn-sm" id="selectBtn"><i class="fas fa-select-all"></i> Select</button>
                 </div>
             </div>
-            <textarea id="outputBox" placeholder="Deobfuscated script will appear here...&#10;Ready to process your script." readonly></textarea>
+            <textarea id="outputBox" placeholder="Deobfuscated script will appear here..." readonly></textarea>
         </div>
 
         <div class="footer">
             <div class="footer-left">
-                <span><i class="fas fa-triangle-exclamation" style="color: var(--accent);"></i> Handles WeAreDevs, string.char, base64, loadstring</span>
                 <span><i class="fas fa-shield-check" style="color: var(--secondary);"></i> 100% Client-Side</span>
+                <span><i class="fas fa-bolt"></i> Handles WeAreDevs v1.0+</span>
             </div>
             <div class="footer-right">
-                <span class="tech-badge"><i class="fas fa-bolt"></i> Ultra Fast</span>
                 <span class="tech-badge"><i class="fas fa-lock"></i> Secure</span>
+                <span class="tech-badge"><i class="fas fa-rocket"></i> Fast</span>
             </div>
         </div>
     </div>
@@ -605,7 +407,6 @@
             const deobfBtn = document.getElementById('deobfuscateBtn');
             const clearBtn = document.getElementById('clearBtn');
             const sampleBtn = document.getElementById('sampleBtn');
-            const resetBtn = document.getElementById('resetBtn');
             const copyBtn = document.getElementById('copyBtn');
             const selectBtn = document.getElementById('selectBtn');
             const statusText = document.getElementById('statusText');
@@ -615,39 +416,16 @@
             const tooltip = document.getElementById('tooltip');
 
             let processedScripts = 0;
-
-            // --- Particles ---
-            function createParticles() {
-                const container = document.getElementById('particles');
-                const colors = ['#6c5ce7', '#00cec9', '#fd79a8', '#fdcb6e', '#00b894'];
-                for (let i = 0; i < 50; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.style.left = Math.random() * 100 + '%';
-                    particle.style.width = (Math.random() * 4 + 1) + 'px';
-                    particle.style.height = particle.style.width;
-                    particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                    particle.style.animationDelay = (Math.random() * 20) + 's';
-                    particle.style.opacity = Math.random() * 0.3 + 0.1;
-                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    container.appendChild(particle);
-                }
-            }
-            createParticles();
-
-            // --- Tooltip ---
             let tooltipTimeout;
 
             function showTooltip(message, isError = false) {
                 tooltip.textContent = message;
                 tooltip.style.borderColor = isError ? 'var(--accent)' : 'var(--secondary)';
-                tooltip.style.color = isError ? 'var(--accent)' : 'var(--text-primary)';
                 tooltip.classList.add('show');
                 clearTimeout(tooltipTimeout);
-                tooltipTimeout = setTimeout(() => tooltip.classList.remove('show'), 3000);
+                tooltipTimeout = setTimeout(() => tooltip.classList.remove('show'), 2500);
             }
 
-            // --- Status ---
             function setStatus(text, type = 'ready') {
                 statusText.textContent = text;
                 statusDot.className = 'dot ' + type;
@@ -657,10 +435,10 @@
             function updateOutput(text) {
                 outputEl.value = text;
                 outputEl.style.height = 'auto';
-                outputEl.style.height = Math.min(outputEl.scrollHeight, 500) + 'px';
+                outputEl.style.height = Math.min(outputEl.scrollHeight, 400) + 'px';
             }
 
-            // --- Core Deobfuscation Engine ---
+            // --- Real WeAreDevs Deobfuscator ---
             function deobfuscateWeAreDevs(code) {
                 if (!code || code.trim() === '') {
                     return '⚠️ Nothing to deobfuscate — please paste a script first.';
@@ -668,80 +446,101 @@
 
                 let result = code;
                 let changes = 0;
+                let maxIterations = 50;
+                let iteration = 0;
 
-                // 1. DECODE string.char() - handles both string.char(72,101) and string.char{72,101}
-                result = result.replace(/string\.char\s*[({]\s*([\d,\s]+)\s*[)}]/gi, (match, args) => {
+                // Function to decode string.char with proper handling
+                function decodeStringChar(match, args) {
                     try {
-                        const numbers = args.split(',').map(s => parseInt(s.trim(), 10));
+                        // Handle both (72,101,108) and {72,101,108} formats
+                        const cleanArgs = args.replace(/[{}()]/g, '');
+                        const numbers = cleanArgs.split(',').map(s => parseInt(s.trim(), 10));
                         if (numbers.some(isNaN)) return match;
                         changes++;
-                        return '"' + numbers.map(n => String.fromCharCode(n)).join('') + '"';
+                        return numbers.map(n => String.fromCharCode(n)).join('');
                     } catch (_) { return match; }
-                });
+                }
 
-                // 2. DECODE base64 in loadstring("base64...")
-                result = result.replace(/loadstring\s*\(\s*["']([A-Za-z0-9+/=]+)["']\s*\)/g, (match, b64) => {
+                // Function to decode base64
+                function decodeBase64(match, b64) {
                     try {
                         const decoded = atob(b64);
                         changes++;
                         return decoded;
                     } catch (_) { return match; }
-                });
+                }
 
-                // 3. DECODE base64 assignments: local x = "base64..."
-                result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/=]+)["']/g, (match, varName, b64) => {
-                    if (b64.length > 8 && /^[A-Za-z0-9+/=]+$/.test(b64)) {
+                // Iterative decoding - run multiple passes
+                while (iteration < maxIterations) {
+                    let previous = result;
+                    
+                    // 1. Decode string.char()
+                    result = result.replace(/string\.char\s*[({]\s*([\d,\s]+)\s*[)}]/gi, decodeStringChar);
+                    
+                    // 2. Decode base64 in loadstring
+                    result = result.replace(/loadstring\s*\(\s*["']([A-Za-z0-9+/=]+)["']\s*\)/gi, decodeBase64);
+                    
+                    // 3. Decode base64 assignments
+                    result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/=]+)["']/g, (match, varName, b64) => {
+                        if (b64.length > 8 && /^[A-Za-z0-9+/=]+$/.test(b64)) {
+                            try {
+                                const decoded = atob(b64);
+                                changes++;
+                                return `local ${varName} = "${decoded}"`;
+                            } catch (_) { /* ignore */ }
+                        }
+                        return match;
+                    });
+                    
+                    // 4. Decode octal sequences
+                    result = result.replace(/\\\d{3}/g, (match) => {
                         try {
-                            const decoded = atob(b64);
                             changes++;
-                            return `local ${varName} = "${decoded}"  -- [DECODED BASE64]`;
-                        } catch (_) { /* ignore */ }
-                    }
-                    return match;
-                });
-
-                // 4. DECODE octal sequences: \123
-                result = result.replace(/\\\d{3}/g, (match) => {
-                    try {
-                        const codePoint = parseInt(match.slice(1), 8);
+                            return String.fromCharCode(parseInt(match.slice(1), 8));
+                        } catch (_) { return match; }
+                    });
+                    
+                    // 5. Decode hex sequences
+                    result = result.replace(/\\x([0-9a-fA-F]{2})/g, (match, hex) => {
+                        try {
+                            changes++;
+                            return String.fromCharCode(parseInt(hex, 16));
+                        } catch (_) { return match; }
+                    });
+                    
+                    // 6. Decode concatenated strings
+                    result = result.replace(/(["'])([^\1]*?)\1\s*\.\.\s*(["'])([^\3]*?)\3/g, (match, q1, s1, q2, s2) => {
                         changes++;
-                        return String.fromCharCode(codePoint);
-                    } catch (_) { return match; }
-                });
-
-                // 5. DECODE hex sequences: \x2F
-                result = result.replace(/\\x([0-9a-fA-F]{2})/g, (match, hex) => {
-                    try {
+                        return `"${s1}${s2}"`;
+                    });
+                    
+                    // 7. Remove obfuscated comment blocks
+                    result = result.replace(/--\[\[[\s\S]*?\]\]/g, (match) => {
                         changes++;
-                        return String.fromCharCode(parseInt(hex, 16));
-                    } catch (_) { return match; }
-                });
+                        return '--[ REMOVED ]';
+                    });
+                    
+                    // 8. Remove huge numeric arrays
+                    result = result.replace(/\{\s*[\d,]+\s*\}/g, (match) => {
+                        if (match.length > 100) {
+                            changes++;
+                            return '{ -- truncated -- }';
+                        }
+                        return match;
+                    });
+                    
+                    // Clean up extra whitespace
+                    result = result.split('\n').map(line => line.trimEnd()).join('\n');
+                    result = result.replace(/\n{3,}/g, '\n\n');
+                    
+                    // If no changes, break
+                    if (result === previous) break;
+                    iteration++;
+                }
 
-                // 6. DECODE UTF-8 sequences: \uXXXX
-                result = result.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
-                    try {
-                        changes++;
-                        return String.fromCharCode(parseInt(hex, 16));
-                    } catch (_) { return match; }
-                });
-
-                // 7. REMOVE obfuscated comment blocks
-                result = result.replace(/--\[\[[\s\S]*?\]\]/g, (match) => {
-                    changes++;
-                    return '--[ OBFUSCATED BLOCK REMOVED ]';
-                });
-
-                // 8. DECODE concatenated strings: "hello".."world" -> "helloworld"
-                result = result.replace(/(["'])([^\1]*?)\1\s*\.\.\s*(["'])([^\3]*?)\3/g, (match, q1, s1, q2, s2) => {
-                    changes++;
-                    return `"${s1}${s2}"`;
-                });
-
-                // 9. CLEAN UP extra whitespace
-                result = result.split('\n').map(line => line.trimEnd()).join('\n');
+                // Final cleanup
                 result = result.replace(/\n{3,}/g, '\n\n');
 
-                // 10. If no changes, add note
                 if (changes === 0 && result.trim() === code.trim()) {
                     return result + '\n\n-- [INFO] No obfuscation patterns detected.';
                 }
@@ -762,6 +561,7 @@
                 setStatus('Processing...', 'processing');
                 deobfBtn.disabled = true;
 
+                // Use setTimeout to prevent UI freeze
                 setTimeout(() => {
                     try {
                         const start = performance.now();
@@ -778,17 +578,16 @@
                     } catch (err) {
                         setStatus('Error', 'error');
                         showTooltip(`❌ Error: ${err.message}`, true);
-                        updateOutput(`⚠️ Deobfuscation error:\n${err.message}\n\nPlease check your script and try again.`);
+                        updateOutput(`⚠️ Deobfuscation error:\n${err.message}`);
                     } finally {
                         deobfBtn.disabled = false;
                     }
-                }, 100);
+                }, 50);
             }
 
             // --- Load Sample ---
             function loadSample() {
                 const sample = `--[[ v1.0.0 https://wearedevs.net/obfuscator ]]
-        -- This is a sample obfuscated script
         local a = string.char(108,111,97,100,115,116,114,105,110,103)
         local b = "cHJpbnQoImhlbGxvIHdvcmxkISIp"
         local c = "bG9hZHN0cmluZyhiYXNlNjRfZGVjb2RlKQ=="
@@ -798,7 +597,7 @@
 
                 inputEl.value = sample;
                 setStatus('Sample loaded', 'done');
-                showTooltip('📄 Sample script loaded! Click Deobfuscate.');
+                showTooltip('📄 Sample script loaded!');
                 updateOutput('');
                 inputEl.focus();
             }
@@ -810,40 +609,30 @@
                 inputEl.value = '';
                 updateOutput('');
                 setStatus('Cleared', 'ready');
-                showTooltip('🧹 Cleared all input and output');
+                showTooltip('🧹 Cleared');
                 inputEl.focus();
             });
 
             sampleBtn.addEventListener('click', loadSample);
 
-            resetBtn.addEventListener('click', function() {
-                inputEl.value = '';
-                updateOutput('');
-                processedScripts = 0;
-                processedCount.textContent = '0';
-                setStatus('Reset', 'ready');
-                showTooltip('🔄 Reset complete');
-                inputEl.focus();
-            });
-
             copyBtn.addEventListener('click', function() {
                 const text = outputEl.value;
                 if (!text || text.trim() === '') {
-                    showTooltip('⚠️ Nothing to copy — deobfuscate first.', true);
+                    showTooltip('⚠️ Nothing to copy', true);
                     return;
                 }
                 navigator.clipboard.writeText(text).then(() => {
-                    showTooltip('✅ Copied to clipboard!');
+                    showTooltip('✅ Copied!');
                 }).catch(() => {
                     outputEl.select();
                     document.execCommand('copy');
-                    showTooltip('✅ Copied to clipboard!');
+                    showTooltip('✅ Copied!');
                 });
             });
 
             selectBtn.addEventListener('click', function() {
                 outputEl.select();
-                showTooltip('📋 Selected all output');
+                showTooltip('📋 Selected');
             });
 
             inputEl.addEventListener('keydown', function(e) {
@@ -853,13 +642,12 @@
                 }
             });
 
-            // Initial state
             setStatus('Ready', 'ready');
             processedCount.textContent = '0';
 
             setTimeout(() => {
                 showTooltip('🚀 Ready! Paste your script and click Deobfuscate.');
-            }, 1000);
+            }, 800);
         })();
     </script>
 
