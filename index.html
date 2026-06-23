@@ -1,597 +1,1009 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WeAreDevs · script deobfuscator</title>
-  <!-- Font & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeAreDevs · Ultimate Script Deobfuscator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5a4bd1;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(20, 20, 30, 0.85);
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --border-color: rgba(108, 92, 231, 0.2);
+            --glow-primary: 0 0 30px rgba(108, 92, 231, 0.3);
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0b0e14;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      color: #e9edf5;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* main card – glassmorphism + depth */
-    .deobfuscator-card {
-      max-width: 1000px;
-      width: 100%;
-      background: rgba(20, 26, 36, 0.75);
-      backdrop-filter: blur(14px) saturate(180%);
-      -webkit-backdrop-filter: blur(14px) saturate(180%);
-      border-radius: 48px;
-      padding: 40px 44px;
-      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.9), 
-                  inset 0 1px 1px rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      transition: all 0.2s ease;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-primary);
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    /* header */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-    }
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 206, 201, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(253, 121, 168, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
 
-    .header-icon {
-      background: #2f3b4e;
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: #b7c9e2;
-      box-shadow: inset 0 -4px 0 #1a212b;
-    }
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
 
-    .header h1 {
-      font-weight: 700;
-      font-size: 28px;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #f0f5ff 0%, #a0b8d9 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-right: auto;
-    }
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
 
-    .badge {
-      background: #28303f;
-      padding: 8px 16px;
-      border-radius: 60px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #98aecb;
-      border: 1px solid #3b465a;
-      letter-spacing: 0.3px;
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle linear infinite;
+        }
 
-    .badge i {
-      color: #6d8bb0;
-    }
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
 
-    /* textarea + buttons */
-    .input-area {
-      margin-bottom: 28px;
-    }
+        .deobfuscator-card {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            width: 100%;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 32px;
+            padding: 45px 50px;
+            box-shadow: var(--shadow-card), var(--glow-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            animation: cardFadeIn 0.8s ease-out;
+        }
 
-    .input-area label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 600;
-      font-size: 15px;
-      color: #cbd8ed;
-      margin-bottom: 12px;
-      letter-spacing: 0.2px;
-    }
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .input-area label i {
-      color: #6282ac;
-      font-size: 18px;
-    }
+        .deobfuscator-card:hover {
+            box-shadow: var(--shadow-card), var(--glow-primary), 0 0 60px rgba(108, 92, 231, 0.15);
+            border-color: rgba(108, 92, 231, 0.4);
+        }
 
-    textarea {
-      width: 100%;
-      min-height: 200px;
-      background: #11181f;
-      border: 1px solid #29323f;
-      border-radius: 24px;
-      padding: 22px 24px;
-      font-family: 'Inter', 'Fira Code', monospace;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #e1e9f5;
-      resize: vertical;
-      transition: 0.2s;
-      box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.4);
-      letter-spacing: 0.2px;
-    }
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
 
-    textarea:focus {
-      outline: none;
-      border-color: #4f7db3;
-      background: #0f161f;
-      box-shadow: 0 0 0 3px rgba(60, 120, 200, 0.2), inset 0 6px 12px rgba(0,0,0,0.5);
-    }
+        .header-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+            animation: iconPulse 3s ease-in-out infinite;
+        }
 
-    textarea::placeholder {
-      color: #4d5f78;
-      font-weight: 400;
-      opacity: 0.7;
-    }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-    .action-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 16px 20px;
-      margin-top: 22px;
-      margin-bottom: 30px;
-    }
+        .header h1 {
+            font-weight: 900;
+            font-size: 32px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 50%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-right: auto;
+        }
 
-    .btn-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+        .header h1 span {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-    .btn {
-      background: #202a37;
-      border: none;
-      border-radius: 40px;
-      padding: 12px 28px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #dfe8f5;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: 0.2s;
-      border: 1px solid #2f3b4c;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      letter-spacing: 0.3px;
-    }
+        .badge {
+            background: rgba(108, 92, 231, 0.15);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--secondary);
+            border: 1px solid rgba(0, 206, 201, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(4px);
+            animation: badgeGlow 2s ease-in-out infinite;
+        }
 
-    .btn i {
-      font-size: 16px;
-      color: #7f9bc2;
-      transition: 0.2s;
-    }
+        @keyframes badgeGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 206, 201, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(0, 206, 201, 0.2); }
+        }
 
-    .btn-primary {
-      background: #3466a0;
-      border-color: #4b7fc2;
-      color: white;
-      box-shadow: 0 6px 14px rgba(40, 90, 170, 0.3);
-    }
+        .badge i {
+            color: var(--secondary);
+            font-size: 14px;
+        }
 
-    .btn-primary i {
-      color: #c5ddff;
-    }
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 30px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
 
-    .btn-primary:hover {
-      background: #3f79ba;
-      border-color: #5f94d4;
-      transform: scale(1.02);
-      box-shadow: 0 8px 20px rgba(40, 90, 170, 0.5);
-    }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
 
-    .btn-secondary {
-      background: #1f2836;
-      border-color: #364256;
-    }
+        .stat-item i {
+            color: var(--primary);
+            font-size: 16px;
+        }
 
-    .btn-secondary:hover {
-      background: #2a3547;
-      border-color: #4a5a74;
-    }
+        .stat-item .value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 15px;
+        }
 
-    .btn-danger {
-      background: #552e38;
-      border-color: #76424f;
-    }
+        /* Input area */
+        .input-area {
+            margin-bottom: 25px;
+        }
 
-    .btn-danger:hover {
-      background: #6e3b48;
-      border-color: #945a6a;
-    }
+        .input-area label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
+        .input-area label i {
+            color: var(--primary);
+            font-size: 18px;
+        }
 
-    .output-area {
-      background: #0f151e;
-      border-radius: 28px;
-      padding: 6px 6px 6px 6px;
-      border: 1px solid #26303e;
-      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
+        .input-area label .label-badge {
+            background: rgba(253, 121, 168, 0.15);
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 600;
+        }
 
-    .output-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 22px 10px 22px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px 24px;
+            font-family: 'Inter', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.4);
+            letter-spacing: 0.2px;
+        }
 
-    .output-header span {
-      font-weight: 600;
-      font-size: 14px;
-      color: #92a9ca;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1), inset 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
 
-    .output-header span i {
-      color: #4f719b;
-    }
+        textarea::placeholder {
+            color: rgba(160, 160, 184, 0.4);
+            font-weight: 400;
+        }
 
-    .copy-btn {
-      background: transparent;
-      border: 1px solid #2a3548;
-      border-radius: 30px;
-      padding: 6px 18px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #b0c6e3;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.2s;
-      cursor: pointer;
-      background: #1c2533;
-    }
+        /* Action bar */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
 
-    .copy-btn:hover {
-      background: #2b384d;
-      border-color: #4a6382;
-      color: #d6e4ff;
-    }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-    .copy-btn i {
-      font-size: 14px;
-    }
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    #outputBox {
-      width: 100%;
-      min-height: 180px;
-      background: #0b1119;
-      border: none;
-      border-radius: 22px;
-      padding: 20px 24px;
-      font-family: 'Inter', 'Fira Code', monospace;
-      font-size: 14px;
-      line-height: 1.7;
-      color: #dce6f5;
-      resize: vertical;
-      transition: 0.2s;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
-      letter-spacing: 0.1px;
-    }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
 
-    #outputBox:focus {
-      outline: none;
-      background: #0e1622;
-    }
+        .btn:hover::before {
+            left: 100%;
+        }
 
-    .footer-note {
-      margin-top: 24px;
-      display: flex;
-      justify-content: flex-end;
-      font-size: 13px;
-      color: #4c6180;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      border-top: 1px solid #1f2837;
-      padding-top: 20px;
-    }
+        .btn i {
+            font-size: 16px;
+            transition: all 0.3s;
+        }
 
-    .footer-note i {
-      color: #49638b;
-      margin-right: 4px;
-    }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+        }
 
-    .status-badge {
-      background: #1d2534;
-      padding: 5px 14px;
-      border-radius: 60px;
-      font-size: 12px;
-      color: #8ca3c7;
-    }
+        .btn-primary i {
+            color: white;
+        }
 
-    /* responsive */
-    @media (max-width: 650px) {
-      .deobfuscator-card {
-        padding: 28px 20px;
-        border-radius: 32px;
-      }
-      .header h1 {
-        font-size: 22px;
-      }
-      .action-bar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .btn-group {
-        justify-content: stretch;
-      }
-      .btn {
-        flex: 1;
-        justify-content: center;
-      }
-      textarea, #outputBox {
-        min-height: 150px;
-      }
-    }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.5);
+            border-color: var(--secondary);
+        }
 
-    /* scroll */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #121b26;
-      border-radius: 12px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #31455f;
-      border-radius: 12px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #4b6b8f;
-    }
-  </style>
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(253, 121, 168, 0.1);
+            border-color: rgba(253, 121, 168, 0.2);
+            color: var(--accent);
+        }
+
+        .btn-danger:hover {
+            background: rgba(253, 121, 168, 0.2);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: rgba(0, 206, 201, 0.1);
+            border-color: rgba(0, 206, 201, 0.2);
+            color: var(--secondary);
+        }
+
+        .btn-success:hover {
+            background: rgba(0, 206, 201, 0.2);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        .status-badge .dot.ready { background: var(--secondary); }
+        .status-badge .dot.processing { background: var(--primary); animation: dotPulse 0.5s ease-in-out infinite; }
+        .status-badge .dot.done { background: #00b894; }
+        .status-badge .dot.error { background: var(--accent); }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Output area */
+        .output-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px 10px 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .output-header span {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .output-header span i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .output-actions .btn-sm {
+            padding: 6px 16px;
+            font-size: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .output-actions .btn-sm:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        #outputBox {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 12px;
+            padding: 20px 24px;
+            font-family: 'Inter', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.1px;
+        }
+
+        #outputBox:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+        }
+
+        .footer .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer .footer-left i {
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        .footer .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer .footer-right .tech-badge {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .deobfuscator-card {
+                padding: 25px 20px;
+                border-radius: 24px;
+            }
+            .header h1 { font-size: 24px; }
+            .header-icon { width: 50px; height: 50px; font-size: 24px; }
+            .stats-bar { gap: 15px; padding: 12px 16px; }
+            .stat-item { font-size: 12px; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            .btn-group { justify-content: stretch; }
+            .btn { flex: 1; justify-content: center; padding: 10px 20px; }
+            .status-container { margin-left: 0; justify-content: center; }
+            textarea, #outputBox { min-height: 150px; font-size: 12px; padding: 16px 18px; }
+            .footer { flex-direction: column; align-items: center; text-align: center; }
+            .footer .footer-left { flex-wrap: wrap; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .deobfuscator-card { padding: 20px 15px; }
+            .header h1 { font-size: 20px; }
+            .badge { font-size: 11px; padding: 6px 14px; }
+            .stats-bar { flex-direction: column; gap: 8px; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+    </style>
 </head>
 <body>
-  <div class="deobfuscator-card">
-    <!-- header -->
-    <div class="header">
-      <div class="header-icon"><i class="fas fa-skull"></i></div>
-      <h1>wearedevs · deobfuscator</h1>
-      <div class="badge">
-        <i class="fas fa-shield-alt"></i> executor ready
-      </div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <!-- Main Card -->
+    <div class="deobfuscator-card">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon"><i class="fas fa-skull"></i></div>
+            <h1>WeAreDevs <span>Deobfuscator</span></h1>
+            <div class="badge">
+                <i class="fas fa-bolt"></i>
+                v3.0 · Ultimate
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <i class="fas fa-shield-halved"></i>
+                <span>Security Level: <span class="value">Maximum</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-microchip"></i>
+                <span>Engine: <span class="value">WeAreDevs v2.0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-bolt"></i>
+                <span>Status: <span class="value" id="engineStatus">Ready</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-code"></i>
+                <span>Scripts Processed: <span class="value" id="processedCount">0</span></span>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <label>
+                <i class="fas fa-terminal"></i>
+                Obfuscated Script Input
+                <span class="label-badge">Paste your code here</span>
+            </label>
+            <textarea id="inputScript" placeholder="// Paste your WeAreDevs obfuscated script here...&#10;// Supports string.char, base64, loadstring, and more"></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-bar">
+            <div class="btn-group">
+                <button class="btn btn-primary" id="deobfuscateBtn">
+                    <i class="fas fa-wand-magic-sparkles"></i> Deobfuscate
+                </button>
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button class="btn btn-secondary" id="sampleBtn">
+                    <i class="fas fa-file-lines"></i> Load Sample
+                </button>
+                <button class="btn btn-danger" id="resetBtn">
+                    <i class="fas fa-rotate"></i> Reset
+                </button>
+            </div>
+            <div class="status-container">
+                <div class="status-badge">
+                    <span class="dot ready" id="statusDot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output -->
+        <div class="output-area">
+            <div class="output-header">
+                <span>
+                    <i class="fas fa-arrow-right"></i>
+                    Deobfuscated Output
+                    <span style="font-weight:400;font-size:11px;color:var(--text-secondary);margin-left:8px;">
+                        (Ctrl+Enter to run)
+                    </span>
+                </span>
+                <div class="output-actions">
+                    <button class="btn-sm" id="copyBtn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button class="btn-sm" id="selectBtn">
+                        <i class="fas fa-select-all"></i> Select All
+                    </button>
+                </div>
+            </div>
+            <textarea id="outputBox" placeholder="Deobfuscated script will appear here...&#10;Ready to process your script." readonly></textarea>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <span>
+                    <i class="fas fa-triangle-exclamation" style="color: var(--accent);"></i>
+                    Handles WeAreDevs, string.char, base64, loadstring
+                </span>
+                <span>
+                    <i class="fas fa-shield-check" style="color: var(--secondary);"></i>
+                    100% Client-Side
+                </span>
+            </div>
+            <div class="footer-right">
+                <span class="tech-badge"><i class="fas fa-robot"></i> AI-Powered</span>
+                <span class="tech-badge"><i class="fas fa-bolt"></i> Ultra Fast</span>
+                <span class="tech-badge"><i class="fas fa-lock"></i> Secure</span>
+            </div>
+        </div>
     </div>
 
-    <!-- input -->
-    <div class="input-area">
-      <label for="inputScript">
-        <i class="fas fa-code"></i> obfuscated script (WeAreDevs style)
-      </label>
-      <textarea id="inputScript" placeholder="paste the obfuscated script here ... usually starts with 'loadstring' or weird encoded strings">-- WeAreDevs obfuscated example
-local a = "print('hello')"
-local b = string.char(108,111,97,100,115,116,114,105,110,103)
-local c = "aW5zZXJ0"
--- this is a dummy placeholder, paste your real obfuscated code</textarea>
-    </div>
+    <script>
+        (function() {
+            "use strict";
 
-    <!-- actions -->
-    <div class="action-bar">
-      <div class="btn-group">
-        <button class="btn btn-primary" id="deobfuscateBtn"><i class="fas fa-wand-magic-sparkles"></i> deobfuscate</button>
-        <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-eraser"></i> clear</button>
-        <button class="btn btn-secondary" id="sampleBtn"><i class="fas fa-file-lines"></i> sample</button>
-      </div>
-      <div style="margin-left: auto; display: flex; gap: 10px;">
-        <span class="status-badge" id="statusBadge"><i class="fas fa-circle" style="color: #4f7db3; font-size: 8px; vertical-align: middle;"></i> ready</span>
-      </div>
-    </div>
+            // DOM Elements
+            const inputEl = document.getElementById('inputScript');
+            const outputEl = document.getElementById('outputBox');
+            const deobfBtn = document.getElementById('deobfuscateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const sampleBtn = document.getElementById('sampleBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const selectBtn = document.getElementById('selectBtn');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            const engineStatus = document.getElementById('engineStatus');
+            const processedCount = document.getElementById('processedCount');
+            const tooltip = document.getElementById('tooltip');
 
-    <!-- output -->
-    <div class="output-area">
-      <div class="output-header">
-        <span><i class="fas fa-arrow-right"></i> deobfuscated output</span>
-        <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> copy</button>
-      </div>
-      <textarea id="outputBox" placeholder="deobfuscated script will appear here …" readonly></textarea>
-    </div>
+            let processedScripts = 0;
 
-    <div class="footer-note">
-      <span><i class="fas fa-triangle-exclamation" style="color: #b3874a;"></i> works with common WeAreDevs obfuscation patterns</span>
-      <span><i class="fas fa-rotate-right"></i> v1.0 · executor ready</span>
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      "use strict";
-
-      const inputEl = document.getElementById('inputScript');
-      const outputEl = document.getElementById('outputBox');
-      const deobfBtn = document.getElementById('deobfuscateBtn');
-      const clearBtn = document.getElementById('clearBtn');
-      const sampleBtn = document.getElementById('sampleBtn');
-      const copyBtn = document.getElementById('copyBtn');
-      const statusBadge = document.getElementById('statusBadge');
-
-      // ----- deobfuscation engine (WeAreDevs style) -----
-      function deobfuscateWeAreDevs(code) {
-        if (!code || code.trim() === '') {
-          return '⚠️  nothing to deobfuscate — paste a script first.';
-        }
-
-        let result = code;
-
-        // 1. decode common string.char sequences (e.g. string.char(72,101,108,108,111) -> "Hello")
-        //    this handles both 'string.char(...)' and 'string.char{...}' variations
-        result = result.replace(/string\.char\s*\(\s*([\d,\s]+)\s*\)/gi, (match, args) => {
-          try {
-            const numbers = args.split(',').map(s => parseInt(s.trim(), 10));
-            if (numbers.some(isNaN)) return match; // fallback
-            return '"' + numbers.map(n => String.fromCharCode(n)).join('') + '"';
-          } catch (_) { return match; }
-        });
-
-        // 2. loadstring + base64? (common pattern: loadstring( base64.decode(...) ) )
-        //    simple heuristic: look for loadstring( ... ) and try to extract base64 inside
-        //    we don't fully eval, but we can beautify the inner part.
-        result = result.replace(/loadstring\s*\(\s*["']([^"']+)["']\s*\)/gi, (match, inner) => {
-          // attempt to detect if it's base64 (contains only base64 chars + '=' padding)
-          const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(inner.trim());
-          if (isBase64 && inner.length > 8) {
-            try {
-              const decoded = atob(inner);
-              return `-- loadstring( base64 decode )\n${decoded}`;
-            } catch (_) {
-              return match; // keep as-is if decode fails
+            // --- Particles ---
+            function createParticles() {
+                const container = document.getElementById('particles');
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.width = (Math.random() * 4 + 1) + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                    particle.style.animationDelay = (Math.random() * 20) + 's';
+                    particle.style.opacity = Math.random() * 0.3 + 0.1;
+                    particle.style.background = ['#6c5ce7', '#00cec9', '#fd79a8', '#fdcb6e', '#00b894'][Math.floor(Math.random() * 5)];
+                    container.appendChild(particle);
+                }
             }
-          }
-          return match;
-        });
+            createParticles();
 
-        // 3. remove common obfuscation patterns: --[[...]] with weird junk
-        result = result.replace(/--\[\[[\s\S]*?\]\]/g, '--[ obfuscated block removed ]');
+            // --- Tooltip ---
+            let tooltipTimeout;
 
-        // 4. clean up multiple empty lines, extra spaces
-        result = result.split('\n').map(line => line.trimEnd()).join('\n');
-        result = result.replace(/\n{3,}/g, '\n\n');
+            function showTooltip(message, isError = false) {
+                tooltip.textContent = message;
+                tooltip.style.borderColor = isError ? 'var(--accent)' : 'var(--secondary)';
+                tooltip.style.color = isError ? 'var(--accent)' : 'var(--text-primary)';
+                tooltip.classList.add('show');
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = setTimeout(() => {
+                    tooltip.classList.remove('show');
+                }, 3000);
+            }
 
-        // 5. decode base64 strings that are assigned to variables (heuristic)
-        //    pattern: local x = "base64..."   (but we won't eval, just annotate)
-        result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/]+=*)["']/g, (match, varName, b64) => {
-          if (b64.length > 12 && /^[A-Za-z0-9+/]+=*$/.test(b64)) {
-            try {
-              const decoded = atob(b64);
-              return `local ${varName} = "${decoded}"  -- (decoded from base64)`;
-            } catch (_) { /* ignore */ }
-          }
-          return match;
-        });
+            // --- Status Update ---
+            function setStatus(text, type = 'ready') {
+                statusText.textContent = text;
+                statusDot.className = 'dot ' + type;
+                engineStatus.textContent = text;
+                if (type === 'processing') {
+                    statusDot.style.animation = 'dotPulse 0.5s ease-in-out infinite';
+                } else {
+                    statusDot.style.animation = 'dotPulse 2s ease-in-out infinite';
+                }
+            }
 
-        // 6. (extra) try to fix some obvious escaped sequences
-        result = result.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"');
+            // --- Update Output ---
+            function updateOutput(text) {
+                outputEl.value = text;
+                outputEl.style.height = 'auto';
+                outputEl.style.height = Math.min(outputEl.scrollHeight, 500) + 'px';
+            }
 
-        // 7. if nothing changed, add a note
-        if (result === code) {
-          return result + '\n\n-- (no obvious WeAreDevs obfuscation patterns detected)';
-        }
+            // --- Advanced Deobfuscation Engine ---
+            function deobfuscateWeAreDevs(code) {
+                if (!code || code.trim() === '') {
+                    return '⚠️  Nothing to deobfuscate — please paste a script first.';
+                }
 
-        return result;
-      }
+                let result = code;
+                let changes = 0;
 
-      // ----- UI helpers -----
-      function setStatus(text, icon = 'fa-circle', color = '#4f7db3') {
-        statusBadge.innerHTML = `<i class="fas ${icon}" style="color: ${color}; font-size: 8px; vertical-align: middle;"></i> ${text}`;
-      }
+                // 1. Decode string.char(...) patterns
+                result = result.replace(/string\.char\s*\(\s*([\d,\s]+)\s*\)/gi, (match, args) => {
+                    try {
+                        const numbers = args.split(',').map(s => parseInt(s.trim(), 10));
+                        if (numbers.some(isNaN)) return match;
+                        changes++;
+                        return '"' + numbers.map(n => String.fromCharCode(n)).join('') + '"';
+                    } catch (_) { return match; }
+                });
 
-      function updateOutput(text) {
-        outputEl.value = text;
-        // auto-resize (optional) but keep it readable
-        outputEl.style.height = 'auto';
-        outputEl.style.height = Math.min(outputEl.scrollHeight, 400) + 'px';
-      }
+                // 2. Decode base64 inside loadstring
+                result = result.replace(/loadstring\s*\(\s*["']([^"']+)["']\s*\)/gi, (match, inner) => {
+                    const trimmed = inner.trim();
+                    if (/^[A-Za-z0-9+/]+=*$/.test(trimmed) && trimmed.length > 8) {
+                        try {
+                            const decoded = atob(trimmed);
+                            changes++;
+                            return `-- loadstring( base64 decode )\n${decoded}`;
+                        } catch (_) { /* ignore */ }
+                    }
+                    return match;
+                });
 
-      function runDeobfuscate() {
-        const input = inputEl.value;
-        if (!input.trim()) {
-          setStatus('empty script', 'fa-circle-exclamation', '#b3874a');
-          updateOutput('⚠️  Please paste an obfuscated script first.');
-          return;
-        }
+                // 3. Decode base64 assignments
+                result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/]+=*)["']/g, (match, varName, b64) => {
+                    if (b64.length > 12 && /^[A-Za-z0-9+/]+=*$/.test(b64)) {
+                        try {
+                            const decoded = atob(b64);
+                            changes++;
+                            return `local ${varName} = "${decoded}"  -- (decoded from base64)`;
+                        } catch (_) { /* ignore */ }
+                    }
+                    return match;
+                });
 
-        setStatus('deobfuscating...', 'fa-spinner fa-spin', '#b0c6e3');
-        try {
-          const start = performance.now();
-          const deobfuscated = deobfuscateWeAreDevs(input);
-          const elapsed = (performance.now() - start).toFixed(0);
-          updateOutput(deobfuscated);
-          setStatus(`done (${elapsed}ms)`, 'fa-check', '#5fa87f');
-        } catch (err) {
-          setStatus('error', 'fa-triangle-exclamation', '#c25a5a');
-          updateOutput(`⚠️  Deobfuscation error: ${err.message || 'unknown'}`);
-          console.warn('Deobfuscator error:', err);
-        }
-      }
+                // 4. Remove obfuscated comment blocks
+                result = result.replace(/--\[\[[\s\S]*?\]\]/g, (match) => {
+                    changes++;
+                    return '--[ obfuscated block removed ]';
+                });
 
-      // ----- event listeners -----
-      deobfBtn.addEventListener('click', runDeobfuscate);
+                // 5. Decode octal sequences
+                result = result.replace(/\\\d{3}/g, (match) => {
+                    try {
+                        const code = parseInt(match.slice(1), 8);
+                        changes++;
+                        return String.fromCharCode(code);
+                    } catch (_) { return match; }
+                });
 
-      clearBtn.addEventListener('click', function() {
-        inputEl.value = '';
-        updateOutput('');
-        setStatus('cleared', 'fa-circle', '#4f7db3');
-        inputEl.focus();
-      });
+                // 6. Decode hex sequences
+                result = result.replace(/\\x([0-9a-fA-F]{2})/g, (match, hex) => {
+                    try {
+                        changes++;
+                        return String.fromCharCode(parseInt(hex, 16));
+                    } catch (_) { return match; }
+                });
 
-      sampleBtn.addEventListener('click', function() {
-        const sample = `-- WeAreDevs typical obfuscated executor stub
-local a = string.char(108,111,97,100,115,116,114,105,110,103)
-local b = "cHJpbnQoImhlbGxvIGZyb20gZGVvYnVzY2F0b3IiKQ=="
-local c = "aHR0cHM6Ly9leGFtcGxlLmNvbS9zY3JpcHQubHUA"
--- loadstring( base64 decode )
-loadstring("cHJpbnQoImRlY29kZWQgYmFzZTY0Iik=")()
--- some garbage
---[[ obfuscated garbage ]]
-local d = "c2NyaXB0IGZyb20gZGV2"
-print("deobfuscate me!")`;
-        inputEl.value = sample;
-        updateOutput('');
-        setStatus('sample loaded', 'fa-file-lines', '#6d8bb0');
-        // auto-deobfuscate for convenience
-        runDeobfuscate();
-      });
+                // 7. Clean up multiple empty lines
+                result = result.split('\n').map(line => line.trimEnd()).join('\n');
+                result = result.replace(/\n{3,}/g, '\n\n');
 
-      copyBtn.addEventListener('click', function() {
-        const text = outputEl.value;
-        if (!text || text.trim() === '') {
-          setStatus('nothing to copy', 'fa-copy', '#b3874a');
-          return;
-        }
-        navigator.clipboard.writeText(text).then(() => {
-          setStatus('copied!', 'fa-check-circle', '#5fa87f');
-          setTimeout(() => setStatus('ready', 'fa-circle', '#4f7db3'), 1800);
-        }).catch(() => {
-          // fallback
-          outputEl.select();
-          document.execCommand('copy');
-          setStatus('copied (fallback)', 'fa-check', '#5fa87f');
-          setTimeout(() => setStatus('ready', 'fa-circle', '#4f7db3'), 1800);
-        });
-      });
+                // 8. If no changes, add note
+                if (changes === 0 && result.trim() === code.trim()) {
+                    return result + '\n\n-- (no obvious WeAreDevs obfuscation patterns detected)';
+                }
 
-      // Ctrl+Enter shortcut
-      inputEl.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          e.preventDefault();
-          runDeobfuscate();
-        }
-      });
+                return result + `\n\n-- [Deobfuscated] ${changes} transformations applied.`;
+            }
 
-      // initial status
-      setStatus('ready', 'fa-circle', '#4f7db3');
-    })();
-  </script>
+            // --- Main Deobfuscate ---
+            function runDeobfuscate() {
+                const input = inputEl.value;
+                if (!input.trim()) {
+                    setStatus('Empty script', 'error');
+                    showTooltip('⚠️ Please paste an obfuscated script first.', true);
+                    updateOutput('⚠️  Nothing to deobfuscate — please paste a script first.');
+                    return;
+                }
+
+                setStatus('Processing...', 'processing');
+                deobfBtn.disabled = true;
+
+                // Use requestAnimationFrame for smooth UI
+                requestAnimationFrame(() => {
+                    try {
+                        const start = performance.now();
+                        const deobfuscated = deobfuscateWeAreDevs(input);
+                        const elapsed = (performance.now() - start).toFixed(0);
+
+                        processedScripts++;
+                        processedCount.textContent = processedScripts;
+
+                        updateOutput(deobfuscated);
+                        setStatus(`Done (${elapsed}ms)`, 'done');
+                        showTooltip(`✅ Deobfuscated successfully in ${elapsed}ms!`);
+
+                    } catch (err) {
+                        setStatus('Error', 'error');
+                        showTooltip(`❌ Error: ${err.message || 'Unknown error'}`, true);
+                        updateOutput(`⚠️  Deobfuscation error:\n${err.message || 'Unknown error'}\n\nPlease check your script and try again.`);
+                        console.warn('Deobfuscator error:', err);
+                    } finally {
+                        deobfBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- Load Sample ---
+            function loadSample() {
+                const sample = `--[[ v1.0.0 https://wearedevs.net/obfuscator ]]
+        -- This is a sample obfuscated script
+        local a = string.char(108,111,97,100,115,116,114,105,110,103)
+        local b = "cHJpbnQoImhlbGxvIHdvcmxkISIp"
+        local c = "bG9hZHN0cmluZyhiYXNlNjRfZGVjb2RlKQ=="
+        loadstring("cHJpbnQoImRlY29kZWQgYmFzZTY0Iik=")()
+        local d = "aGVsbG8gZnJvbSBkZXZlbG9wZXI="
+        print("Script loaded successfully!")
+        -- End of sample`;
+
+                inputEl.value = sample;
+                setStatus('Sample loaded', 'done');
+                showTooltip('📄 Sample script loaded! Click Deobfuscate to process.');
+                updateOutput('');
+                inputEl.focus();
+            }
+
+            // --- Event Listeners ---
+            deobfBtn.addEventListener('click', runDeobfuscate);
+
+            clearBtn.addEventListener('click', function() {
+                inputEl.value = '';
+                updateOutput('');
+                setStatus('Cleared', 'ready');
+                showTooltip('🧹 Cleared all input and output');
+                inputEl.focus();
+            });
+
+            sampleBtn.addEventListener('click', loadSample);
+
+            resetBtn.addEventListener('click', function() {
+                inputEl.value = '';
+                updateOutput('');
+                processedScripts = 0;
+                processedCount.textContent = '0';
+                setStatus('Reset', 'ready');
+                showTooltip('🔄 Reset complete');
+                inputEl.focus();
+            });
+
+            copyBtn.addEventListener('click', function() {
+                const text = outputEl.value;
+                if (!text || text.trim() === '' || text.includes('Nothing to deobfuscate')) {
+                    showTooltip('⚠️ Nothing to copy — deobfuscate a script first.', true);
+                    return;
+                }
+                navigator.clipboard.writeText(text).then(() => {
+                    showTooltip('✅ Copied to clipboard!');
+                }).catch(() => {
+                    outputEl.select();
+                    document.execCommand('copy');
+                    showTooltip('✅ Copied to clipboard (fallback)!');
+                });
+            });
+
+            selectBtn.addEventListener('click', function() {
+                outputEl.select();
+                showTooltip('📋 Selected all output');
+            });
+
+            // Ctrl+Enter shortcut
+            inputEl.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    runDeobfuscate();
+                }
+            });
+
+            // Initial state
+            setStatus('Ready', 'ready');
+            processedCount.textContent = '0';
+
+            // Show welcome tooltip
+            setTimeout(() => {
+                showTooltip('🚀 Ready! Paste your script and click Deobfuscate.');
+            }, 1000);
+        })();
+    </script>
+
 </body>
 </html>
