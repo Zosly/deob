@@ -24,11 +24,7 @@
             --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -43,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background */
         body::before {
             content: '';
             position: fixed;
@@ -64,7 +59,6 @@
             50% { opacity: 1; }
         }
 
-        /* Floating particles */
         .particles {
             position: fixed;
             top: 0;
@@ -80,23 +74,16 @@
             position: absolute;
             width: 3px;
             height: 3px;
-            background: var(--primary);
             border-radius: 50%;
             opacity: 0.3;
             animation: floatParticle linear infinite;
         }
 
         @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 0.3; }
             90% { opacity: 0.3; }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
 
         .deobfuscator-card {
@@ -116,14 +103,8 @@
         }
 
         @keyframes cardFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .deobfuscator-card:hover {
@@ -131,7 +112,6 @@
             border-color: rgba(108, 92, 231, 0.4);
         }
 
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -197,12 +177,8 @@
             50% { box-shadow: 0 0 40px rgba(0, 206, 201, 0.2); }
         }
 
-        .badge i {
-            color: var(--secondary);
-            font-size: 14px;
-        }
+        .badge i { color: var(--secondary); font-size: 14px; }
 
-        /* Stats bar */
         .stats-bar {
             display: flex;
             gap: 30px;
@@ -222,21 +198,10 @@
             color: var(--text-secondary);
         }
 
-        .stat-item i {
-            color: var(--primary);
-            font-size: 16px;
-        }
+        .stat-item i { color: var(--primary); font-size: 16px; }
+        .stat-item .value { color: var(--text-primary); font-weight: 700; font-size: 15px; }
 
-        .stat-item .value {
-            color: var(--text-primary);
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        /* Input area */
-        .input-area {
-            margin-bottom: 25px;
-        }
+        .input-area { margin-bottom: 25px; }
 
         .input-area label {
             display: flex;
@@ -249,19 +214,7 @@
             letter-spacing: 0.3px;
         }
 
-        .input-area label i {
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .input-area label .label-badge {
-            background: rgba(253, 121, 168, 0.15);
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 600;
-        }
+        .input-area label i { color: var(--primary); font-size: 18px; }
 
         textarea {
             width: 100%;
@@ -292,7 +245,6 @@
             font-weight: 400;
         }
 
-        /* Action bar */
         .action-bar {
             display: flex;
             flex-wrap: wrap;
@@ -302,11 +254,7 @@
             margin-bottom: 25px;
         }
 
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 12px; }
 
         .btn {
             background: rgba(255, 255, 255, 0.05);
@@ -323,7 +271,6 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            letter-spacing: 0.3px;
             position: relative;
             overflow: hidden;
         }
@@ -339,14 +286,9 @@
             transition: left 0.5s;
         }
 
-        .btn:hover::before {
-            left: 100%;
-        }
+        .btn:hover::before { left: 100%; }
 
-        .btn i {
-            font-size: 16px;
-            transition: all 0.3s;
-        }
+        .btn i { font-size: 16px; transition: all 0.3s; }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -355,9 +297,7 @@
             box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
         }
 
-        .btn-primary i {
-            color: white;
-        }
+        .btn-primary i { color: white; }
 
         .btn-primary:hover {
             transform: translateY(-2px);
@@ -365,9 +305,7 @@
             border-color: var(--secondary);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .btn-primary:active { transform: translateY(0); }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
@@ -389,18 +327,6 @@
         .btn-danger:hover {
             background: rgba(253, 121, 168, 0.2);
             border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: rgba(0, 206, 201, 0.1);
-            border-color: rgba(0, 206, 201, 0.2);
-            color: var(--secondary);
-        }
-
-        .btn-success:hover {
-            background: rgba(0, 206, 201, 0.2);
-            border-color: var(--secondary);
             transform: translateY(-2px);
         }
 
@@ -442,7 +368,6 @@
             50% { opacity: 0.5; transform: scale(0.8); }
         }
 
-        /* Output area */
         .output-area {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 16px;
@@ -469,15 +394,9 @@
             gap: 10px;
         }
 
-        .output-header span i {
-            color: var(--primary);
-            font-size: 16px;
-        }
+        .output-header span i { color: var(--primary); font-size: 16px; }
 
-        .output-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .output-actions { display: flex; gap: 10px; }
 
         .output-actions .btn-sm {
             padding: 6px 16px;
@@ -521,7 +440,6 @@
             background: rgba(0, 0, 0, 0.7);
         }
 
-        /* Footer */
         .footer {
             margin-top: 25px;
             display: flex;
@@ -541,10 +459,7 @@
             gap: 20px;
         }
 
-        .footer .footer-left i {
-            color: var(--primary);
-            margin-right: 4px;
-        }
+        .footer .footer-left i { color: var(--primary); margin-right: 4px; }
 
         .footer .footer-right {
             display: flex;
@@ -560,7 +475,6 @@
             color: var(--text-secondary);
         }
 
-        /* Tooltip */
         .tooltip {
             position: fixed;
             bottom: 30px;
@@ -586,12 +500,8 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .deobfuscator-card {
-                padding: 25px 20px;
-                border-radius: 24px;
-            }
+            .deobfuscator-card { padding: 25px 20px; border-radius: 24px; }
             .header h1 { font-size: 24px; }
             .header-icon { width: 50px; height: 50px; font-size: 24px; }
             .stats-bar { gap: 15px; padding: 12px 16px; }
@@ -612,7 +522,6 @@
             .stats-bar { flex-direction: column; gap: 8px; }
         }
 
-        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -621,69 +530,34 @@
 </head>
 <body>
 
-    <!-- Particles -->
     <div class="particles" id="particles"></div>
-
-    <!-- Tooltip -->
     <div class="tooltip" id="tooltip"></div>
 
-    <!-- Main Card -->
     <div class="deobfuscator-card">
-        <!-- Header -->
         <div class="header">
             <div class="header-icon"><i class="fas fa-skull"></i></div>
             <h1>WeAreDevs <span>Deobfuscator</span></h1>
-            <div class="badge">
-                <i class="fas fa-bolt"></i>
-                v3.0 · Ultimate
-            </div>
+            <div class="badge"><i class="fas fa-bolt"></i> v3.0 · Ultimate</div>
         </div>
 
-        <!-- Stats -->
         <div class="stats-bar">
-            <div class="stat-item">
-                <i class="fas fa-shield-halved"></i>
-                <span>Security Level: <span class="value">Maximum</span></span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-microchip"></i>
-                <span>Engine: <span class="value">WeAreDevs v2.0</span></span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-bolt"></i>
-                <span>Status: <span class="value" id="engineStatus">Ready</span></span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-code"></i>
-                <span>Scripts Processed: <span class="value" id="processedCount">0</span></span>
-            </div>
+            <div class="stat-item"><i class="fas fa-shield-halved"></i> Security: <span class="value">Maximum</span></div>
+            <div class="stat-item"><i class="fas fa-microchip"></i> Engine: <span class="value">WeAreDevs v2.0</span></div>
+            <div class="stat-item"><i class="fas fa-bolt"></i> Status: <span class="value" id="engineStatus">Ready</span></div>
+            <div class="stat-item"><i class="fas fa-code"></i> Processed: <span class="value" id="processedCount">0</span></div>
         </div>
 
-        <!-- Input -->
         <div class="input-area">
-            <label>
-                <i class="fas fa-terminal"></i>
-                Obfuscated Script Input
-                <span class="label-badge">Paste your code here</span>
-            </label>
+            <label><i class="fas fa-terminal"></i> Obfuscated Script Input</label>
             <textarea id="inputScript" placeholder="// Paste your WeAreDevs obfuscated script here...&#10;// Supports string.char, base64, loadstring, and more"></textarea>
         </div>
 
-        <!-- Actions -->
         <div class="action-bar">
             <div class="btn-group">
-                <button class="btn btn-primary" id="deobfuscateBtn">
-                    <i class="fas fa-wand-magic-sparkles"></i> Deobfuscate
-                </button>
-                <button class="btn btn-secondary" id="clearBtn">
-                    <i class="fas fa-eraser"></i> Clear
-                </button>
-                <button class="btn btn-secondary" id="sampleBtn">
-                    <i class="fas fa-file-lines"></i> Load Sample
-                </button>
-                <button class="btn btn-danger" id="resetBtn">
-                    <i class="fas fa-rotate"></i> Reset
-                </button>
+                <button class="btn btn-primary" id="deobfuscateBtn"><i class="fas fa-wand-magic-sparkles"></i> Deobfuscate</button>
+                <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-eraser"></i> Clear</button>
+                <button class="btn btn-secondary" id="sampleBtn"><i class="fas fa-file-lines"></i> Load Sample</button>
+                <button class="btn btn-danger" id="resetBtn"><i class="fas fa-rotate"></i> Reset</button>
             </div>
             <div class="status-container">
                 <div class="status-badge">
@@ -693,7 +567,6 @@
             </div>
         </div>
 
-        <!-- Output -->
         <div class="output-area">
             <div class="output-header">
                 <span>
@@ -704,31 +577,19 @@
                     </span>
                 </span>
                 <div class="output-actions">
-                    <button class="btn-sm" id="copyBtn">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                    <button class="btn-sm" id="selectBtn">
-                        <i class="fas fa-select-all"></i> Select All
-                    </button>
+                    <button class="btn-sm" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="btn-sm" id="selectBtn"><i class="fas fa-select-all"></i> Select All</button>
                 </div>
             </div>
             <textarea id="outputBox" placeholder="Deobfuscated script will appear here...&#10;Ready to process your script." readonly></textarea>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
             <div class="footer-left">
-                <span>
-                    <i class="fas fa-triangle-exclamation" style="color: var(--accent);"></i>
-                    Handles WeAreDevs, string.char, base64, loadstring
-                </span>
-                <span>
-                    <i class="fas fa-shield-check" style="color: var(--secondary);"></i>
-                    100% Client-Side
-                </span>
+                <span><i class="fas fa-triangle-exclamation" style="color: var(--accent);"></i> Handles WeAreDevs, string.char, base64, loadstring</span>
+                <span><i class="fas fa-shield-check" style="color: var(--secondary);"></i> 100% Client-Side</span>
             </div>
             <div class="footer-right">
-                <span class="tech-badge"><i class="fas fa-robot"></i> AI-Powered</span>
                 <span class="tech-badge"><i class="fas fa-bolt"></i> Ultra Fast</span>
                 <span class="tech-badge"><i class="fas fa-lock"></i> Secure</span>
             </div>
@@ -739,7 +600,6 @@
         (function() {
             "use strict";
 
-            // DOM Elements
             const inputEl = document.getElementById('inputScript');
             const outputEl = document.getElementById('outputBox');
             const deobfBtn = document.getElementById('deobfuscateBtn');
@@ -759,6 +619,7 @@
             // --- Particles ---
             function createParticles() {
                 const container = document.getElementById('particles');
+                const colors = ['#6c5ce7', '#00cec9', '#fd79a8', '#fdcb6e', '#00b894'];
                 for (let i = 0; i < 50; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'particle';
@@ -768,7 +629,7 @@
                     particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
                     particle.style.animationDelay = (Math.random() * 20) + 's';
                     particle.style.opacity = Math.random() * 0.3 + 0.1;
-                    particle.style.background = ['#6c5ce7', '#00cec9', '#fd79a8', '#fdcb6e', '#00b894'][Math.floor(Math.random() * 5)];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                     container.appendChild(particle);
                 }
             }
@@ -783,41 +644,33 @@
                 tooltip.style.color = isError ? 'var(--accent)' : 'var(--text-primary)';
                 tooltip.classList.add('show');
                 clearTimeout(tooltipTimeout);
-                tooltipTimeout = setTimeout(() => {
-                    tooltip.classList.remove('show');
-                }, 3000);
+                tooltipTimeout = setTimeout(() => tooltip.classList.remove('show'), 3000);
             }
 
-            // --- Status Update ---
+            // --- Status ---
             function setStatus(text, type = 'ready') {
                 statusText.textContent = text;
                 statusDot.className = 'dot ' + type;
                 engineStatus.textContent = text;
-                if (type === 'processing') {
-                    statusDot.style.animation = 'dotPulse 0.5s ease-in-out infinite';
-                } else {
-                    statusDot.style.animation = 'dotPulse 2s ease-in-out infinite';
-                }
             }
 
-            // --- Update Output ---
             function updateOutput(text) {
                 outputEl.value = text;
                 outputEl.style.height = 'auto';
                 outputEl.style.height = Math.min(outputEl.scrollHeight, 500) + 'px';
             }
 
-            // --- Advanced Deobfuscation Engine ---
+            // --- Core Deobfuscation Engine ---
             function deobfuscateWeAreDevs(code) {
                 if (!code || code.trim() === '') {
-                    return '⚠️  Nothing to deobfuscate — please paste a script first.';
+                    return '⚠️ Nothing to deobfuscate — please paste a script first.';
                 }
 
                 let result = code;
                 let changes = 0;
 
-                // 1. Decode string.char(...) patterns
-                result = result.replace(/string\.char\s*\(\s*([\d,\s]+)\s*\)/gi, (match, args) => {
+                // 1. DECODE string.char() - handles both string.char(72,101) and string.char{72,101}
+                result = result.replace(/string\.char\s*[({]\s*([\d,\s]+)\s*[)}]/gi, (match, args) => {
                     try {
                         const numbers = args.split(',').map(s => parseInt(s.trim(), 10));
                         if (numbers.some(isNaN)) return match;
@@ -826,47 +679,37 @@
                     } catch (_) { return match; }
                 });
 
-                // 2. Decode base64 inside loadstring
-                result = result.replace(/loadstring\s*\(\s*["']([^"']+)["']\s*\)/gi, (match, inner) => {
-                    const trimmed = inner.trim();
-                    if (/^[A-Za-z0-9+/]+=*$/.test(trimmed) && trimmed.length > 8) {
-                        try {
-                            const decoded = atob(trimmed);
-                            changes++;
-                            return `-- loadstring( base64 decode )\n${decoded}`;
-                        } catch (_) { /* ignore */ }
-                    }
-                    return match;
-                });
-
-                // 3. Decode base64 assignments
-                result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/]+=*)["']/g, (match, varName, b64) => {
-                    if (b64.length > 12 && /^[A-Za-z0-9+/]+=*$/.test(b64)) {
-                        try {
-                            const decoded = atob(b64);
-                            changes++;
-                            return `local ${varName} = "${decoded}"  -- (decoded from base64)`;
-                        } catch (_) { /* ignore */ }
-                    }
-                    return match;
-                });
-
-                // 4. Remove obfuscated comment blocks
-                result = result.replace(/--\[\[[\s\S]*?\]\]/g, (match) => {
-                    changes++;
-                    return '--[ obfuscated block removed ]';
-                });
-
-                // 5. Decode octal sequences
-                result = result.replace(/\\\d{3}/g, (match) => {
+                // 2. DECODE base64 in loadstring("base64...")
+                result = result.replace(/loadstring\s*\(\s*["']([A-Za-z0-9+/=]+)["']\s*\)/g, (match, b64) => {
                     try {
-                        const code = parseInt(match.slice(1), 8);
+                        const decoded = atob(b64);
                         changes++;
-                        return String.fromCharCode(code);
+                        return decoded;
                     } catch (_) { return match; }
                 });
 
-                // 6. Decode hex sequences
+                // 3. DECODE base64 assignments: local x = "base64..."
+                result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/=]+)["']/g, (match, varName, b64) => {
+                    if (b64.length > 8 && /^[A-Za-z0-9+/=]+$/.test(b64)) {
+                        try {
+                            const decoded = atob(b64);
+                            changes++;
+                            return `local ${varName} = "${decoded}"  -- [DECODED BASE64]`;
+                        } catch (_) { /* ignore */ }
+                    }
+                    return match;
+                });
+
+                // 4. DECODE octal sequences: \123
+                result = result.replace(/\\\d{3}/g, (match) => {
+                    try {
+                        const codePoint = parseInt(match.slice(1), 8);
+                        changes++;
+                        return String.fromCharCode(codePoint);
+                    } catch (_) { return match; }
+                });
+
+                // 5. DECODE hex sequences: \x2F
                 result = result.replace(/\\x([0-9a-fA-F]{2})/g, (match, hex) => {
                     try {
                         changes++;
@@ -874,16 +717,36 @@
                     } catch (_) { return match; }
                 });
 
-                // 7. Clean up multiple empty lines
+                // 6. DECODE UTF-8 sequences: \uXXXX
+                result = result.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+                    try {
+                        changes++;
+                        return String.fromCharCode(parseInt(hex, 16));
+                    } catch (_) { return match; }
+                });
+
+                // 7. REMOVE obfuscated comment blocks
+                result = result.replace(/--\[\[[\s\S]*?\]\]/g, (match) => {
+                    changes++;
+                    return '--[ OBFUSCATED BLOCK REMOVED ]';
+                });
+
+                // 8. DECODE concatenated strings: "hello".."world" -> "helloworld"
+                result = result.replace(/(["'])([^\1]*?)\1\s*\.\.\s*(["'])([^\3]*?)\3/g, (match, q1, s1, q2, s2) => {
+                    changes++;
+                    return `"${s1}${s2}"`;
+                });
+
+                // 9. CLEAN UP extra whitespace
                 result = result.split('\n').map(line => line.trimEnd()).join('\n');
                 result = result.replace(/\n{3,}/g, '\n\n');
 
-                // 8. If no changes, add note
+                // 10. If no changes, add note
                 if (changes === 0 && result.trim() === code.trim()) {
-                    return result + '\n\n-- (no obvious WeAreDevs obfuscation patterns detected)';
+                    return result + '\n\n-- [INFO] No obfuscation patterns detected.';
                 }
 
-                return result + `\n\n-- [Deobfuscated] ${changes} transformations applied.`;
+                return result + `\n\n-- [DEOBFUSCATED] ${changes} transformations applied.`;
             }
 
             // --- Main Deobfuscate ---
@@ -892,15 +755,14 @@
                 if (!input.trim()) {
                     setStatus('Empty script', 'error');
                     showTooltip('⚠️ Please paste an obfuscated script first.', true);
-                    updateOutput('⚠️  Nothing to deobfuscate — please paste a script first.');
+                    updateOutput('⚠️ Nothing to deobfuscate — please paste a script first.');
                     return;
                 }
 
                 setStatus('Processing...', 'processing');
                 deobfBtn.disabled = true;
 
-                // Use requestAnimationFrame for smooth UI
-                requestAnimationFrame(() => {
+                setTimeout(() => {
                     try {
                         const start = performance.now();
                         const deobfuscated = deobfuscateWeAreDevs(input);
@@ -915,13 +777,12 @@
 
                     } catch (err) {
                         setStatus('Error', 'error');
-                        showTooltip(`❌ Error: ${err.message || 'Unknown error'}`, true);
-                        updateOutput(`⚠️  Deobfuscation error:\n${err.message || 'Unknown error'}\n\nPlease check your script and try again.`);
-                        console.warn('Deobfuscator error:', err);
+                        showTooltip(`❌ Error: ${err.message}`, true);
+                        updateOutput(`⚠️ Deobfuscation error:\n${err.message}\n\nPlease check your script and try again.`);
                     } finally {
                         deobfBtn.disabled = false;
                     }
-                });
+                }, 100);
             }
 
             // --- Load Sample ---
@@ -933,12 +794,11 @@
         local c = "bG9hZHN0cmluZyhiYXNlNjRfZGVjb2RlKQ=="
         loadstring("cHJpbnQoImRlY29kZWQgYmFzZTY0Iik=")()
         local d = "aGVsbG8gZnJvbSBkZXZlbG9wZXI="
-        print("Script loaded successfully!")
-        -- End of sample`;
+        print("Script loaded successfully!")`;
 
                 inputEl.value = sample;
                 setStatus('Sample loaded', 'done');
-                showTooltip('📄 Sample script loaded! Click Deobfuscate to process.');
+                showTooltip('📄 Sample script loaded! Click Deobfuscate.');
                 updateOutput('');
                 inputEl.focus();
             }
@@ -968,8 +828,8 @@
 
             copyBtn.addEventListener('click', function() {
                 const text = outputEl.value;
-                if (!text || text.trim() === '' || text.includes('Nothing to deobfuscate')) {
-                    showTooltip('⚠️ Nothing to copy — deobfuscate a script first.', true);
+                if (!text || text.trim() === '') {
+                    showTooltip('⚠️ Nothing to copy — deobfuscate first.', true);
                     return;
                 }
                 navigator.clipboard.writeText(text).then(() => {
@@ -977,7 +837,7 @@
                 }).catch(() => {
                     outputEl.select();
                     document.execCommand('copy');
-                    showTooltip('✅ Copied to clipboard (fallback)!');
+                    showTooltip('✅ Copied to clipboard!');
                 });
             });
 
@@ -986,7 +846,6 @@
                 showTooltip('📋 Selected all output');
             });
 
-            // Ctrl+Enter shortcut
             inputEl.addEventListener('keydown', function(e) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
@@ -998,7 +857,6 @@
             setStatus('Ready', 'ready');
             processedCount.textContent = '0';
 
-            // Show welcome tooltip
             setTimeout(() => {
                 showTooltip('🚀 Ready! Paste your script and click Deobfuscate.');
             }, 1000);
