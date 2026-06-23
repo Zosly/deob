@@ -1,629 +1,597 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Requiem</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeAreDevs · script deobfuscator</title>
+  <!-- Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            background: #000000;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Courier New', monospace;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0b0e14;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #e9edf5;
+    }
 
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: #0a0a0c;
-            cursor: crosshair;
-        }
+    /* main card – glassmorphism + depth */
+    .deobfuscator-card {
+      max-width: 1000px;
+      width: 100%;
+      background: rgba(20, 26, 36, 0.75);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border-radius: 48px;
+      padding: 40px 44px;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.9), 
+                  inset 0 1px 1px rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
+    }
 
-        /* Minimal button - black, sharp edges */
-        .trigger-wrapper {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            z-index: 20;
-            opacity: 0.85;
-            transition: opacity 0.2s;
-        }
-        .trigger-wrapper:hover {
-            opacity: 1;
-        }
+    /* header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
 
-        .black-button {
-            background: #000000;
-            border: 1.5px solid #2c2c2c;
-            color: #cccccc;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            padding: 12px 28px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            text-transform: uppercase;
-            box-shadow: none;
-            border-radius: 0px;
-        }
+    .header-icon {
+      background: #2f3b4e;
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #b7c9e2;
+      box-shadow: inset 0 -4px 0 #1a212b;
+    }
 
-        .black-button:hover {
-            background: #111111;
-            border-color: #6a1a1a;
-            color: #e0e0e0;
-        }
+    .header h1 {
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0f5ff 0%, #a0b8d9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-right: auto;
+    }
 
-        .black-button:active {
-            transform: scale(0.97);
-        }
+    .badge {
+      background: #28303f;
+      padding: 8px 16px;
+      border-radius: 60px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #98aecb;
+      border: 1px solid #3b465a;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        @media (max-width: 640px) {
-            .trigger-wrapper {
-                bottom: 20px;
-                right: 20px;
-            }
-            .black-button {
-                padding: 8px 20px;
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+    .badge i {
+      color: #6d8bb0;
+    }
+
+    /* textarea + buttons */
+    .input-area {
+      margin-bottom: 28px;
+    }
+
+    .input-area label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      color: #cbd8ed;
+      margin-bottom: 12px;
+      letter-spacing: 0.2px;
+    }
+
+    .input-area label i {
+      color: #6282ac;
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      background: #11181f;
+      border: 1px solid #29323f;
+      border-radius: 24px;
+      padding: 22px 24px;
+      font-family: 'Inter', 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e1e9f5;
+      resize: vertical;
+      transition: 0.2s;
+      box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.4);
+      letter-spacing: 0.2px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4f7db3;
+      background: #0f161f;
+      box-shadow: 0 0 0 3px rgba(60, 120, 200, 0.2), inset 0 6px 12px rgba(0,0,0,0.5);
+    }
+
+    textarea::placeholder {
+      color: #4d5f78;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px 20px;
+      margin-top: 22px;
+      margin-bottom: 30px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      background: #202a37;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 28px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #dfe8f5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #2f3b4c;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.3px;
+    }
+
+    .btn i {
+      font-size: 16px;
+      color: #7f9bc2;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: #3466a0;
+      border-color: #4b7fc2;
+      color: white;
+      box-shadow: 0 6px 14px rgba(40, 90, 170, 0.3);
+    }
+
+    .btn-primary i {
+      color: #c5ddff;
+    }
+
+    .btn-primary:hover {
+      background: #3f79ba;
+      border-color: #5f94d4;
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(40, 90, 170, 0.5);
+    }
+
+    .btn-secondary {
+      background: #1f2836;
+      border-color: #364256;
+    }
+
+    .btn-secondary:hover {
+      background: #2a3547;
+      border-color: #4a5a74;
+    }
+
+    .btn-danger {
+      background: #552e38;
+      border-color: #76424f;
+    }
+
+    .btn-danger:hover {
+      background: #6e3b48;
+      border-color: #945a6a;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .output-area {
+      background: #0f151e;
+      border-radius: 28px;
+      padding: 6px 6px 6px 6px;
+      border: 1px solid #26303e;
+      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px 10px 22px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .output-header span {
+      font-weight: 600;
+      font-size: 14px;
+      color: #92a9ca;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .output-header span i {
+      color: #4f719b;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid #2a3548;
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #b0c6e3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+      cursor: pointer;
+      background: #1c2533;
+    }
+
+    .copy-btn:hover {
+      background: #2b384d;
+      border-color: #4a6382;
+      color: #d6e4ff;
+    }
+
+    .copy-btn i {
+      font-size: 14px;
+    }
+
+    #outputBox {
+      width: 100%;
+      min-height: 180px;
+      background: #0b1119;
+      border: none;
+      border-radius: 22px;
+      padding: 20px 24px;
+      font-family: 'Inter', 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #dce6f5;
+      resize: vertical;
+      transition: 0.2s;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+      letter-spacing: 0.1px;
+    }
+
+    #outputBox:focus {
+      outline: none;
+      background: #0e1622;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 13px;
+      color: #4c6180;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      border-top: 1px solid #1f2837;
+      padding-top: 20px;
+    }
+
+    .footer-note i {
+      color: #49638b;
+      margin-right: 4px;
+    }
+
+    .status-badge {
+      background: #1d2534;
+      padding: 5px 14px;
+      border-radius: 60px;
+      font-size: 12px;
+      color: #8ca3c7;
+    }
+
+    /* responsive */
+    @media (max-width: 650px) {
+      .deobfuscator-card {
+        padding: 28px 20px;
+        border-radius: 32px;
+      }
+      .header h1 {
+        font-size: 22px;
+      }
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-group {
+        justify-content: stretch;
+      }
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+      textarea, #outputBox {
+        min-height: 150px;
+      }
+    }
+
+    /* scroll */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121b26;
+      border-radius: 12px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #31455f;
+      border-radius: 12px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4b6b8f;
+    }
+  </style>
 </head>
 <body>
-    <canvas id="brutalCanvas"></canvas>
-    <div class="trigger-wrapper">
-        <button id="carelessBtn" class="black-button">i don't care</button>
+  <div class="deobfuscator-card">
+    <!-- header -->
+    <div class="header">
+      <div class="header-icon"><i class="fas fa-skull"></i></div>
+      <h1>wearedevs · deobfuscator</h1>
+      <div class="badge">
+        <i class="fas fa-shield-alt"></i> executor ready
+      </div>
     </div>
 
-    <script>
-        (function() {
-            // ---------- FULLSCREEN CANVAS ----------
-            const canvas = document.getElementById('brutalCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            let width, height;
-            
-            function resizeCanvas() {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
+    <!-- input -->
+    <div class="input-area">
+      <label for="inputScript">
+        <i class="fas fa-code"></i> obfuscated script (WeAreDevs style)
+      </label>
+      <textarea id="inputScript" placeholder="paste the obfuscated script here ... usually starts with 'loadstring' or weird encoded strings">-- WeAreDevs obfuscated example
+local a = "print('hello')"
+local b = string.char(108,111,97,100,115,116,114,105,110,103)
+local c = "aW5zZXJ0"
+-- this is a dummy placeholder, paste your real obfuscated code</textarea>
+    </div>
+
+    <!-- actions -->
+    <div class="action-bar">
+      <div class="btn-group">
+        <button class="btn btn-primary" id="deobfuscateBtn"><i class="fas fa-wand-magic-sparkles"></i> deobfuscate</button>
+        <button class="btn btn-secondary" id="clearBtn"><i class="fas fa-eraser"></i> clear</button>
+        <button class="btn btn-secondary" id="sampleBtn"><i class="fas fa-file-lines"></i> sample</button>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 10px;">
+        <span class="status-badge" id="statusBadge"><i class="fas fa-circle" style="color: #4f7db3; font-size: 8px; vertical-align: middle;"></i> ready</span>
+      </div>
+    </div>
+
+    <!-- output -->
+    <div class="output-area">
+      <div class="output-header">
+        <span><i class="fas fa-arrow-right"></i> deobfuscated output</span>
+        <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> copy</button>
+      </div>
+      <textarea id="outputBox" placeholder="deobfuscated script will appear here …" readonly></textarea>
+    </div>
+
+    <div class="footer-note">
+      <span><i class="fas fa-triangle-exclamation" style="color: #b3874a;"></i> works with common WeAreDevs obfuscation patterns</span>
+      <span><i class="fas fa-rotate-right"></i> v1.0 · executor ready</span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      const inputEl = document.getElementById('inputScript');
+      const outputEl = document.getElementById('outputBox');
+      const deobfBtn = document.getElementById('deobfuscateBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const sampleBtn = document.getElementById('sampleBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const statusBadge = document.getElementById('statusBadge');
+
+      // ----- deobfuscation engine (WeAreDevs style) -----
+      function deobfuscateWeAreDevs(code) {
+        if (!code || code.trim() === '') {
+          return '⚠️  nothing to deobfuscate — paste a script first.';
+        }
+
+        let result = code;
+
+        // 1. decode common string.char sequences (e.g. string.char(72,101,108,108,111) -> "Hello")
+        //    this handles both 'string.char(...)' and 'string.char{...}' variations
+        result = result.replace(/string\.char\s*\(\s*([\d,\s]+)\s*\)/gi, (match, args) => {
+          try {
+            const numbers = args.split(',').map(s => parseInt(s.trim(), 10));
+            if (numbers.some(isNaN)) return match; // fallback
+            return '"' + numbers.map(n => String.fromCharCode(n)).join('') + '"';
+          } catch (_) { return match; }
+        });
+
+        // 2. loadstring + base64? (common pattern: loadstring( base64.decode(...) ) )
+        //    simple heuristic: look for loadstring( ... ) and try to extract base64 inside
+        //    we don't fully eval, but we can beautify the inner part.
+        result = result.replace(/loadstring\s*\(\s*["']([^"']+)["']\s*\)/gi, (match, inner) => {
+          // attempt to detect if it's base64 (contains only base64 chars + '=' padding)
+          const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(inner.trim());
+          if (isBase64 && inner.length > 8) {
+            try {
+              const decoded = atob(inner);
+              return `-- loadstring( base64 decode )\n${decoded}`;
+            } catch (_) {
+              return match; // keep as-is if decode fails
             }
-            window.addEventListener('resize', () => {
-                resizeCanvas();
-                updateCharacterPositions();
-            });
-            resizeCanvas();
-            
-            // ---------- AUDIO: Gunshot (Web Audio API - realistic) ----------
-            let audioContext = null;
-            let gunshotBuffer = null;
-            
-            function initAudio() {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const sampleRate = audioContext.sampleRate;
-                    const duration = 1.2;
-                    const bufferSize = sampleRate * duration;
-                    const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
-                    const data = buffer.getChannelData(0);
-                    
-                    for (let i = 0; i < bufferSize; i++) {
-                        let t = i / sampleRate;
-                        let envelope = 0;
-                        if (t < 0.008) envelope = t / 0.008;
-                        else envelope = Math.exp(- (t - 0.008) * 38);
-                        
-                        let noise = (Math.random() * 2 - 1) * 0.75;
-                        let crack = 0;
-                        if (t < 0.01) crack = Math.sin(3.14159 * t / 0.01) * 0.85;
-                        let thump = Math.sin(2 * Math.PI * 75 * t) * Math.exp(-t * 28) * 0.55;
-                        let value = (noise * 0.75 + crack * 0.9 + thump) * envelope;
-                        data[i] = Math.max(-0.9, Math.min(0.9, value));
-                    }
-                    gunshotBuffer = buffer;
-                } catch(e) { console.warn("audio not supported"); }
-            }
-            
-            function playGunshot() {
-                if (!audioContext || !gunshotBuffer) {
-                    if (!audioContext) initAudio();
-                    if (!gunshotBuffer) return;
-                }
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        const source = audioContext.createBufferSource();
-                        source.buffer = gunshotBuffer;
-                        source.connect(audioContext.destination);
-                        source.start();
-                    }).catch(e=>console.warn);
-                } else {
-                    const source = audioContext.createBufferSource();
-                    source.buffer = gunshotBuffer;
-                    source.connect(audioContext.destination);
-                    source.start();
-                }
-            }
-            
-            // ---------- STATE ----------
-            let hasActed = false;           
-            let actingPhase = 0;            // 0 = idle, 1 = bleeding active, 2 = fade out
-            let shakeIntensity = 0;
-            let blurAmount = 0;
-            let fadeOpacity = 0;
-            
-            // Dynamic blood system: blood pool that grows over time
-            let bloodPool = {
-                active: false,
-                radius: 0,           // current spread radius
-                maxRadius: 0,
-                centerX: 0,
-                centerY: 0,
-                growthRate: 0.8,     // pixels per frame
-                bloodDrops: []       // additional splatter drops
-            };
-            
-            let ragdollAngle = 0;
-            let bleedTimer = 0;       // time since shot (frames)
-            const BLEED_DURATION = 180; // frames until full coverage and fade out (~3 sec at 60fps)
-            
-            // ---------- CHARACTER: realistic human proportions, arms connected, tall body ----------
-            let character = {
-                headX: 0, headY: 0,
-                neckX: 0, neckY: 0,
-                bodyX: 0, bodyY: 0,
-                leftShoulderX: 0, leftShoulderY: 0,
-                leftElbowX: 0, leftElbowY: 0,
-                leftHandX: 0, leftHandY: 0,
-                rightShoulderX: 0, rightShoulderY: 0,
-                rightElbowX: 0, rightElbowY: 0,
-                rightHandX: 0, rightHandY: 0,
-                gunX: 0, gunY: 0,
-                gunAngle: 0
-            };
-            
-            function updateCharacterPositions() {
-                const headCenterX = width * 0.5;
-                const headCenterY = height * 0.38;
-                
-                character.headX = headCenterX;
-                character.headY = headCenterY;
-                character.neckX = headCenterX;
-                character.neckY = headCenterY + 32;
-                character.bodyX = headCenterX;
-                character.bodyY = character.neckY + 8;
-                
-                character.leftShoulderX = character.bodyX - 42;
-                character.leftShoulderY = character.bodyY - 4;
-                character.rightShoulderX = character.bodyX + 42;
-                character.rightShoulderY = character.bodyY - 4;
-                
-                character.leftElbowX = character.leftShoulderX - 28;
-                character.leftElbowY = character.leftShoulderY + 52;
-                character.leftHandX = character.leftElbowX - 12;
-                character.leftHandY = character.leftElbowY + 48;
-                
-                character.rightElbowX = character.rightShoulderX + 18;
-                character.rightElbowY = character.rightShoulderY + 28;
-                character.rightHandX = character.headX + 38;
-                character.rightHandY = character.headY - 2;
-                
-                character.gunX = character.rightHandX + 8;
-                character.gunY = character.rightHandY + 2;
-                character.gunAngle = -0.18;
-            }
-            
-            // ---------- DYNAMIC BLOOD SYSTEM ----------
-            function startBleeding() {
-                bloodPool.active = true;
-                bloodPool.radius = 8;
-                // Max radius: enough to cover large floor area around the body
-                bloodPool.maxRadius = Math.min(width, height) * 0.65;
-                bloodPool.centerX = character.bodyX;
-                bloodPool.centerY = character.bodyY + 85;
-                
-                // Initial blood drops from head wound (realistic spray)
-                for(let i=0; i<35; i++) {
-                    const angle = (Math.random() - 0.5) * Math.PI * 1.4;
-                    const dist = Math.random() * 55;
-                    bloodPool.bloodDrops.push({
-                        x: character.headX + Math.cos(angle) * dist * 0.9,
-                        y: character.headY + 15 + Math.sin(angle) * dist * 0.7,
-                        radius: Math.random() * 6 + 2.5,
-                        alpha: 0.95
-                    });
-                }
-            }
-            
-            function updateBloodSpread() {
-                if (!bloodPool.active) return;
-                
-                bleedTimer++;
-                
-                // Grow blood pool radius over time (accelerating slightly)
-                if (bloodPool.radius < bloodPool.maxRadius) {
-                    let growth = bloodPool.growthRate;
-                    // accelerate as blood flows
-                    if (bleedTimer > 40) growth *= 1.3;
-                    if (bleedTimer > 90) growth *= 1.5;
-                    bloodPool.radius += growth;
-                    if (bloodPool.radius > bloodPool.maxRadius) bloodPool.radius = bloodPool.maxRadius;
-                }
-                
-                // Add new blood drops periodically from head wound (continuing bleed)
-                if (bleedTimer % 6 === 0 && bleedTimer < BLEED_DURATION - 30) {
-                    for(let i=0; i<3; i++) {
-                        const angle = (Math.random() - 0.5) * Math.PI * 1.2;
-                        const dist = Math.random() * 45;
-                        bloodPool.bloodDrops.push({
-                            x: character.headX + Math.cos(angle) * dist * 0.8,
-                            y: character.headY + 12 + Math.sin(angle) * dist * 0.6 + Math.random() * 15,
-                            radius: Math.random() * 5 + 2,
-                            alpha: 0.92
-                        });
-                    }
-                }
-                
-                // Also add some drip drops that slide down the body
-                if (bleedTimer % 8 === 0 && bleedTimer < BLEED_DURATION - 20) {
-                    bloodPool.bloodDrops.push({
-                        x: character.bodyX + (Math.random() - 0.5) * 40,
-                        y: character.bodyY + 50 + Math.random() * 80,
-                        radius: Math.random() * 5 + 2,
-                        alpha: 0.9
-                    });
-                }
-                
-                // Limit blood drops array size
-                if (bloodPool.bloodDrops.length > 400) {
-                    bloodPool.bloodDrops = bloodPool.bloodDrops.slice(-350);
-                }
-                
-                // Transition to fade out when blood pool is nearly full
-                if (bleedTimer >= BLEED_DURATION && actingPhase === 1) {
-                    actingPhase = 2;  // start fade out
-                    fadeOpacity = 0;
-                }
-            }
-            
-            function drawBloodPool() {
-                if (!bloodPool.active) return;
-                
-                // Draw main spreading blood pool (radial gradient for realistic spread)
-                const gradient = ctx.createRadialGradient(
-                    bloodPool.centerX, bloodPool.centerY, 5,
-                    bloodPool.centerX, bloodPool.centerY, bloodPool.radius
-                );
-                gradient.addColorStop(0, "rgba(85, 12, 12, 0.95)");
-                gradient.addColorStop(0.4, "rgba(75, 10, 10, 0.85)");
-                gradient.addColorStop(0.7, "rgba(60, 8, 8, 0.7)");
-                gradient.addColorStop(1, "rgba(45, 5, 5, 0.4)");
-                
-                ctx.beginPath();
-                ctx.ellipse(bloodPool.centerX, bloodPool.centerY, bloodPool.radius, bloodPool.radius * 0.65, 0, 0, Math.PI*2);
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                
-                // Draw secondary pool spreading toward edges
-                if (bloodPool.radius > 80) {
-                    const secondGrad = ctx.createRadialGradient(
-                        bloodPool.centerX - 20, bloodPool.centerY + 15, 10,
-                        bloodPool.centerX - 20, bloodPool.centerY + 15, bloodPool.radius * 0.7
-                    );
-                    secondGrad.addColorStop(0, "rgba(70, 10, 10, 0.7)");
-                    secondGrad.addColorStop(1, "rgba(40, 5, 5, 0.3)");
-                    ctx.beginPath();
-                    ctx.ellipse(bloodPool.centerX - 25, bloodPool.centerY + 20, bloodPool.radius * 0.55, bloodPool.radius * 0.4, 0, 0, Math.PI*2);
-                    ctx.fillStyle = secondGrad;
-                    ctx.fill();
-                }
-                
-                // Draw individual blood drops/splatters
-                for(let drop of bloodPool.bloodDrops) {
-                    ctx.beginPath();
-                    ctx.ellipse(drop.x, drop.y, drop.radius, drop.radius * 0.7, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(95, 12, 12, ${drop.alpha * 0.9})`;
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.ellipse(drop.x - 1, drop.y - 0.5, drop.radius * 0.45, drop.radius * 0.35, 0, 0, Math.PI*2);
-                    ctx.fillStyle = `rgba(55, 5, 5, 0.85)`;
-                    ctx.fill();
-                }
-            }
-            
-            // ---------- DRAW REALISTIC GUN ----------
-            function drawRealisticGun(x, y, angle, isFallen = false) {
-                ctx.save();
-                ctx.translate(x, y);
-                if(angle) ctx.rotate(angle);
-                ctx.fillStyle = "#232323";
-                ctx.shadowBlur = 1.5;
-                ctx.fillRect(-24, -7, 48, 15);
-                ctx.fillStyle = "#3a3a3a";
-                ctx.fillRect(-20, -9, 38, 4);
-                ctx.fillStyle = "#181818";
-                ctx.fillRect(20, -5, 18, 9);
-                ctx.beginPath();
-                ctx.moveTo(-24, -3);
-                ctx.lineTo(-32, 14);
-                ctx.lineTo(-16, 14);
-                ctx.fill();
-                ctx.fillStyle = "#2e2a24";
-                ctx.fillRect(-30, 5, 16, 9);
-                ctx.beginPath();
-                ctx.arc(-14, 0, 5.5, 0, Math.PI * 1.85);
-                ctx.strokeStyle = "#444";
-                ctx.lineWidth = 1.8;
-                ctx.stroke();
-                ctx.fillStyle = "#555";
-                ctx.fillRect(-16, -1, 2, 5);
-                ctx.fillStyle = "#2a2a2a";
-                ctx.fillRect(6, -10, 7, 6);
-                ctx.restore();
-            }
-            
-            // ---------- DRAW HUMAN FIGURE (featureless black, tall, arms connected) ----------
-            function drawHumanFigure() {
-                const hX = character.headX;
-                const hY = character.headY;
-                const nX = character.neckX;
-                const nY = character.neckY;
-                const bX = character.bodyX;
-                const bY = character.bodyY;
-                const isDead = hasActed;
-                
-                ctx.save();
-                if(isDead && ragdollAngle !== 0) {
-                    ctx.translate(bX, bY + 15);
-                    ctx.rotate(ragdollAngle * 0.55);
-                    ctx.translate(-bX, -(bY + 15));
-                }
-                
-                // TORSO
-                ctx.fillStyle = "#000000";
-                ctx.fillRect(bX-38, bY-4, 76, 138);
-                ctx.fillRect(bX-32, bY+128, 64, 32);
-                
-                // LEGS
-                ctx.fillRect(bX-32, bY+148, 26, 78);
-                ctx.fillRect(bX+6, bY+148, 26, 78);
-                
-                // NECK
-                ctx.fillRect(nX-14, nY-4, 28, 24);
-                
-                // HEAD (round, black)
-                ctx.beginPath();
-                ctx.arc(hX, hY, 36, 0, Math.PI*2);
-                ctx.fillStyle = "#000000";
-                ctx.fill();
-                ctx.strokeStyle = "#1e1e1e";
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-                
-                // WOUND VISUAL (after shot - small dark hole with blood around)
-                if(isDead && bleedTimer > 0) {
-                    ctx.beginPath();
-                    ctx.arc(hX + 6, hY - 4, 8, 0, Math.PI*2);
-                    ctx.fillStyle = "#2a0505";
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(hX + 4, hY - 6, 4, 0, Math.PI*2);
-                    ctx.fillStyle = "#4a0808";
-                    ctx.fill();
-                }
-                
-                // LEFT ARM
-                ctx.beginPath();
-                ctx.moveTo(character.leftShoulderX, character.leftShoulderY);
-                ctx.lineTo(character.leftElbowX, character.leftElbowY);
-                ctx.lineTo(character.leftElbowX + 12, character.leftElbowY + 8);
-                ctx.lineTo(character.leftShoulderX + 8, character.leftShoulderY + 6);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo(character.leftElbowX, character.leftElbowY);
-                ctx.lineTo(character.leftHandX, character.leftHandY);
-                ctx.lineTo(character.leftHandX + 12, character.leftHandY + 6);
-                ctx.lineTo(character.leftElbowX + 12, character.leftElbowY + 8);
-                ctx.fill();
-                
-                // RIGHT ARM
-                ctx.beginPath();
-                ctx.moveTo(character.rightShoulderX, character.rightShoulderY);
-                ctx.lineTo(character.rightElbowX, character.rightElbowY);
-                ctx.lineTo(character.rightElbowX - 10, character.rightElbowY + 8);
-                ctx.lineTo(character.rightShoulderX - 6, character.rightShoulderY + 6);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo(character.rightElbowX, character.rightElbowY);
-                ctx.lineTo(character.rightHandX, character.rightHandY);
-                ctx.lineTo(character.rightHandX - 8, character.rightHandY + 6);
-                ctx.lineTo(character.rightElbowX - 10, character.rightElbowY + 8);
-                ctx.fill();
-                
-                if(!isDead) {
-                    drawRealisticGun(character.gunX, character.gunY, character.gunAngle, false);
-                } else {
-                    drawRealisticGun(bX+44, bY+158, 1.3, true);
-                }
-                
-                ctx.restore();
-            }
-            
-            // ---------- SHOOT SEQUENCE ----------
-            function startShootSequence() {
-                if(hasActed) return;
-                hasActed = true;
-                actingPhase = 1;      // bleeding phase
-                shakeIntensity = 20;
-                blurAmount = 14;
-                bleedTimer = 0;
-                
-                playGunshot();
-                
-                // Start the dynamic blood spread (not instant pool)
-                startBleeding();
-                
-                // Initial head wound blood spray (few drops)
-                for(let i=0;i<25;i++) {
-                    const angle = (Math.random() - 0.5) * Math.PI * 1.2;
-                    const dist = Math.random() * 40;
-                    bloodPool.bloodDrops.push({
-                        x: character.headX + Math.cos(angle) * dist,
-                        y: character.headY + 10 + Math.sin(angle) * dist * 0.7,
-                        radius: Math.random() * 5 + 2,
-                        alpha: 0.95
-                    });
-                }
-                
-                // Ragdoll effect
-                ragdollAngle = -0.42;
-                
-                // Disable button
-                const btn = document.getElementById('carelessBtn');
-                if(btn) {
-                    btn.disabled = true;
-                    btn.style.opacity = "0.35";
-                    btn.style.cursor = "default";
-                    btn.innerText = "---";
-                }
-            }
-            
-            // ---------- POST PROCESSING ----------
-            function updatePostProcessing() {
-                if(actingPhase === 1) {
-                    // Shake and blur fade out over time
-                    shakeIntensity *= 0.94;
-                    blurAmount *= 0.94;
-                    
-                    // Update blood spread
-                    updateBloodSpread();
-                    
-                    // Ragdoll settling
-                    ragdollAngle += ( -0.49 - ragdollAngle ) * 0.09;
-                    if(ragdollAngle < -0.49) ragdollAngle = -0.49;
-                }
-                else if(actingPhase === 2) {
-                    fadeOpacity += 0.012;
-                    if(fadeOpacity >= 1.0) {
-                        fadeOpacity = 1.0;
-                        actingPhase = 3;   // frozen black screen
-                    }
-                }
-            }
-            
-            function applyShakeAndBlur() {
-                if(actingPhase === 1 && (shakeIntensity > 0.8 || blurAmount > 0.5)) {
-                    const dx = (Math.random() - 0.5) * shakeIntensity;
-                    const dy = (Math.random() - 0.5) * shakeIntensity * 0.7;
-                    canvas.style.transform = `translate(${dx}px, ${dy}px)`;
-                    let blurValue = Math.min(blurAmount, 12);
-                    if(blurValue > 0.4) {
-                        canvas.style.filter = `blur(${blurValue}px)`;
-                    } else {
-                        canvas.style.filter = "none";
-                    }
-                } else {
-                    canvas.style.transform = "";
-                    if(actingPhase !== 1) canvas.style.filter = "";
-                }
-            }
-            
-            function drawFadeOverlay() {
-                if(actingPhase >= 2 && fadeOpacity > 0) {
-                    ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(fadeOpacity, 0.99)})`;
-                    ctx.fillRect(0, 0, width, height);
-                }
-            }
-            
-            // ---------- BACKGROUND ----------
-            function drawBackground() {
-                const grad = ctx.createLinearGradient(0, 0, 0, height);
-                grad.addColorStop(0, "#08080c");
-                grad.addColorStop(1, "#12141c");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, width, height);
-                
-                ctx.fillStyle = "rgba(28,28,38,0.22)";
-                for(let i=0;i<160;i++) {
-                    ctx.fillRect((i*131)%width, (i*83)%height, 1.2, 1.2);
-                }
-                ctx.beginPath();
-                ctx.moveTo(0, height*0.76);
-                ctx.lineTo(width, height*0.73);
-                ctx.strokeStyle = "#1c1818";
-                ctx.lineWidth = 2.5;
-                ctx.stroke();
-            }
-            
-            // ---------- RENDER LOOP ----------
-            let animationFrame;
-            
-            function render() {
-                if (!ctx) return;
-                if (width === 0 || height === 0) {
-                    resizeCanvas();
-                    updateCharacterPositions();
-                }
-                
-                updateCharacterPositions();
-                updatePostProcessing();
-                
-                drawBackground();
-                drawBloodPool();      // dynamic spreading blood
-                drawHumanFigure();
-                
-                // Additional blood dripping from head wound (active bleeding effect)
-                if(hasActed && bloodPool.active && bleedTimer < BLEED_DURATION) {
-                    ctx.beginPath();
-                    ctx.ellipse(character.headX + 3, character.headY + 12, 5, 8, 0, 0, Math.PI*2);
-                    ctx.fillStyle = "rgba(85, 12, 12, 0.85)";
-                    ctx.fill();
-                }
-                
-                drawFadeOverlay();
-                applyShakeAndBlur();
-                
-                animationFrame = requestAnimationFrame(render);
-            }
-            
-            // ---------- INITIALIZATION ----------
-            function init() {
-                resizeCanvas();
-                updateCharacterPositions();
-                initAudio();
-                
-                const btn = document.getElementById('carelessBtn');
-                if(btn) {
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        if(!hasActed) {
-                            if(audioContext && audioContext.state === 'suspended') {
-                                audioContext.resume().then(() => startShootSequence()).catch(()=>startShootSequence());
-                            } else {
-                                startShootSequence();
-                            }
-                        }
-                    });
-                }
-                
-                render();
-            }
-            
-            init();
-        })();
-    </script>
+          }
+          return match;
+        });
+
+        // 3. remove common obfuscation patterns: --[[...]] with weird junk
+        result = result.replace(/--\[\[[\s\S]*?\]\]/g, '--[ obfuscated block removed ]');
+
+        // 4. clean up multiple empty lines, extra spaces
+        result = result.split('\n').map(line => line.trimEnd()).join('\n');
+        result = result.replace(/\n{3,}/g, '\n\n');
+
+        // 5. decode base64 strings that are assigned to variables (heuristic)
+        //    pattern: local x = "base64..."   (but we won't eval, just annotate)
+        result = result.replace(/local\s+(\w+)\s*=\s*["']([A-Za-z0-9+/]+=*)["']/g, (match, varName, b64) => {
+          if (b64.length > 12 && /^[A-Za-z0-9+/]+=*$/.test(b64)) {
+            try {
+              const decoded = atob(b64);
+              return `local ${varName} = "${decoded}"  -- (decoded from base64)`;
+            } catch (_) { /* ignore */ }
+          }
+          return match;
+        });
+
+        // 6. (extra) try to fix some obvious escaped sequences
+        result = result.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"');
+
+        // 7. if nothing changed, add a note
+        if (result === code) {
+          return result + '\n\n-- (no obvious WeAreDevs obfuscation patterns detected)';
+        }
+
+        return result;
+      }
+
+      // ----- UI helpers -----
+      function setStatus(text, icon = 'fa-circle', color = '#4f7db3') {
+        statusBadge.innerHTML = `<i class="fas ${icon}" style="color: ${color}; font-size: 8px; vertical-align: middle;"></i> ${text}`;
+      }
+
+      function updateOutput(text) {
+        outputEl.value = text;
+        // auto-resize (optional) but keep it readable
+        outputEl.style.height = 'auto';
+        outputEl.style.height = Math.min(outputEl.scrollHeight, 400) + 'px';
+      }
+
+      function runDeobfuscate() {
+        const input = inputEl.value;
+        if (!input.trim()) {
+          setStatus('empty script', 'fa-circle-exclamation', '#b3874a');
+          updateOutput('⚠️  Please paste an obfuscated script first.');
+          return;
+        }
+
+        setStatus('deobfuscating...', 'fa-spinner fa-spin', '#b0c6e3');
+        try {
+          const start = performance.now();
+          const deobfuscated = deobfuscateWeAreDevs(input);
+          const elapsed = (performance.now() - start).toFixed(0);
+          updateOutput(deobfuscated);
+          setStatus(`done (${elapsed}ms)`, 'fa-check', '#5fa87f');
+        } catch (err) {
+          setStatus('error', 'fa-triangle-exclamation', '#c25a5a');
+          updateOutput(`⚠️  Deobfuscation error: ${err.message || 'unknown'}`);
+          console.warn('Deobfuscator error:', err);
+        }
+      }
+
+      // ----- event listeners -----
+      deobfBtn.addEventListener('click', runDeobfuscate);
+
+      clearBtn.addEventListener('click', function() {
+        inputEl.value = '';
+        updateOutput('');
+        setStatus('cleared', 'fa-circle', '#4f7db3');
+        inputEl.focus();
+      });
+
+      sampleBtn.addEventListener('click', function() {
+        const sample = `-- WeAreDevs typical obfuscated executor stub
+local a = string.char(108,111,97,100,115,116,114,105,110,103)
+local b = "cHJpbnQoImhlbGxvIGZyb20gZGVvYnVzY2F0b3IiKQ=="
+local c = "aHR0cHM6Ly9leGFtcGxlLmNvbS9zY3JpcHQubHUA"
+-- loadstring( base64 decode )
+loadstring("cHJpbnQoImRlY29kZWQgYmFzZTY0Iik=")()
+-- some garbage
+--[[ obfuscated garbage ]]
+local d = "c2NyaXB0IGZyb20gZGV2"
+print("deobfuscate me!")`;
+        inputEl.value = sample;
+        updateOutput('');
+        setStatus('sample loaded', 'fa-file-lines', '#6d8bb0');
+        // auto-deobfuscate for convenience
+        runDeobfuscate();
+      });
+
+      copyBtn.addEventListener('click', function() {
+        const text = outputEl.value;
+        if (!text || text.trim() === '') {
+          setStatus('nothing to copy', 'fa-copy', '#b3874a');
+          return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+          setStatus('copied!', 'fa-check-circle', '#5fa87f');
+          setTimeout(() => setStatus('ready', 'fa-circle', '#4f7db3'), 1800);
+        }).catch(() => {
+          // fallback
+          outputEl.select();
+          document.execCommand('copy');
+          setStatus('copied (fallback)', 'fa-check', '#5fa87f');
+          setTimeout(() => setStatus('ready', 'fa-circle', '#4f7db3'), 1800);
+        });
+      });
+
+      // Ctrl+Enter shortcut
+      inputEl.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          runDeobfuscate();
+        }
+      });
+
+      // initial status
+      setStatus('ready', 'fa-circle', '#4f7db3');
+    })();
+  </script>
 </body>
 </html>
